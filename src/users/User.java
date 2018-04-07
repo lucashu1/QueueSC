@@ -1,5 +1,9 @@
 package users;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+
+import javax.xml.bind.DatatypeConverter;
 
 import queues.Queue;
 
@@ -20,6 +24,7 @@ abstract public class User {
 		
 	}
 	//Member Functions
+	
 	public void leaveQueue(Queue q)
 	{
 		
@@ -64,7 +69,5 @@ abstract public class User {
 	public void setManagedQueues(ArrayList<Queue> managedQueues) {
 		this.managedQueues = managedQueues;
 	}
-	
-	
-
+		
 }
