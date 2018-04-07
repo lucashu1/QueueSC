@@ -20,6 +20,9 @@ public class Queue {
 	private double latitude;
 	private double radius;
 	// TODO: Google Maps location
+	
+	//getPosition returns int
+	//enqueue adds new entrant with 
 	public boolean inRange(double userLat, double userLong) {
 	    final int R = 6371; // Radius of the earth
 
@@ -38,13 +41,6 @@ public class Queue {
 	      return false;
 	}
 	
-	public void setLat(double lat) {
-		latitude = lat;
-	}
-	
-	public void setLong(double longi) {
-		longitude = longi;
-	}
 	// Return true if queue contains a user with the given email
 	public boolean hasUser(String email) {
 		for (QueueEntry qe : queueEntries) {
