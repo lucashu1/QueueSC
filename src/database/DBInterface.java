@@ -10,11 +10,15 @@ import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import queues.Queue;
+import queues.QueueEntry;
 import users.User;
 
 public class DBInterface {
 	
-	private static String jdbcURL = "jdbc:postgresql://queuescdb.canjkvgt5lzz.us-east-1.rds.amazonaws.com:5432/mainDB";
+	private static String baseDbURL = "jdbc:postgresql://queuescdb.canjkvgt5lzz.us-east-1.rds.amazonaws.com:5432/";
+	private static String dbName = "mainDB";
+	private static String dbUser = "QueueSCAdmin";
+	private static String dbPassword = "bluesky4238";
 	
 	private JdbcPooledConnectionSource connectionSource = null;
 	
@@ -30,15 +34,17 @@ public class DBInterface {
 	private void setupDatabase() {
 		try {
 			// Connect to database
-			connectionSource = new JdbcPooledConnectionSource(jdbcURL);
+			connectionSource = new JdbcPooledConnectionSource(baseDbURL + dbName + "?user=" + dbUser + "&password=" + dbPassword);
+			
 			// Create Database Access Objects
 			userDao = DaoManager.createDao(connectionSource, User.class);
 			queueDao = DaoManager.createDao(connectionSource, Queue.class);
+			queueEntryDao = DaoManager.createDao(connectionSource, QueueEntry.class);
 			
 			// Create database tables if they do not exist
 			TableUtils.createTable(connectionSource, User.class);
 			TableUtils.createTable(connectionSource, Queue.class);
-			
+			TableUtils.createTable(connectionSource, QueueEntry.class);
 		}
 		catch (Exception e) {
 			System.out.println("There is a problem connecting to the database");
@@ -63,23 +69,70 @@ public class DBInterface {
 		
 	}
 	
-	public boolean isUserInQueue(User u, String queueName) {
+	public boolean isUserInQueue(User u, Queue q) {
 		// Returns true if the user is in the queue in the DB
 		
 	}
 	
-	public Vector<User> getUsersInQueue(Queue q) {
+	public Vector<User> getUsersInQueue(String qCode) {
 		// Returns a vector of user objects in queue; if queue DNE, returns empty vector
-		
+		if (doesQueueExist(qCode)) {
+			
+		}
+	}
+	
+	public boolean doesQueueExist(String qCode) {
+		// Returns true if a queue exists with that qCode
+		try {
+			Queue allegedQueue = queueDao.queryForId(qCode);
+			if (allegedQueue == null) {
+				return false;
+			}
+			return true;
+		} catch (SQLException se) {
+			// There was some problem accessing the db
+			return false;
+		}
 	}
 	
 	public boolean addUsertoDB(User u) {
 		// Returns true if the the user object was successfully added to DB
+		if (doesUserExist(u.getEmail())) {
+			return false;
+		}
+		try {
+			userDao.create(u);
+			return true;
+		} catch (SQLException se) {
+			// There was some kind of problem saving the user to the db
+			return false;
+		}
+	}
+	
+	public boolean doesUserExist(String email) {
+		try {
+			User allegedUser = userDao.queryForId(email);
+			if (allegedUser == null) {
+				return false;
+			} else {
+				return true;
+			}
+		} catch (SQLException se) {
+			System.out.println("There was a problem querying the database.");
+			return true;
+		}
+	}
+	
+	public boolean deleteQueue(String qCode) {
+		// Returns true if the queue was deleted successfully
+	}
+	
+	public boolean deleteUser(String email) {
 		
 	}
 	
-	public boolean deleteQueue(Queue q) {
-		// Returns true if the queue was deleted sucessfully
+	public boolean removeUserFromQueue(String email, String qCode) {
+		if ()
 	}
 	
 }
