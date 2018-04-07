@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+.jumbotron {
+	background-color: #FB4D3D;
+	color: white;
+}
+
+body {
+	background-color: #fdc02f;
+	padding-top: 0px;
+}
