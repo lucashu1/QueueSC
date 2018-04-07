@@ -1,3 +1,4 @@
+package users;
 
 public class RegisteredUser extends User{
 

@@ -1,4 +1,7 @@
+package users;
 import java.util.ArrayList;
+
+import queues.Queue;
 
 abstract public class User {
 	//Member Variables 

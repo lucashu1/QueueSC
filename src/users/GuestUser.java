@@ -1,3 +1,4 @@
+package users;
 
 public class GuestUser extends User{
 
