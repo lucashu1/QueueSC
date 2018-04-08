@@ -17,6 +17,7 @@ import queues.QueueManager;
 @ServerEndpoint(value = "/ws",
 	decoders = MessageDecoder.class, 
 	encoders = MessageEncoder.class)
+
 public class QueueSCServer {
 	private static Vector<Session> sessions = new Vector<Session>();
 	private QueueManager qm;
@@ -70,10 +71,32 @@ public class QueueSCServer {
 		
 	}
 	private void processDeleteQueueRequest(Message m, Session s) {
-		
+		String qCode = m.getqCode();
+		boolean isSuccess = dbInterface.deleteQueue(qCode); // Try to delete queue
+		Message response = new Message("deleteQueueResponse");
+		if (isSuccess) { // Success --> send "success"
+			response.setResponseStatus("success");
+		} else { // Failure (qCode not found) --> send "qCodeInvalid"
+			response.setResponseStatus("qCodeInvalid");
+		}
+		sendMessage(response, s);
 	}
 	private void processEnqueueRequest(Message m, Session s) {
+		String email = m.getEmail();
+		String qCode = m.getqCode();
+		int numFieldInput = m.getNumFieldInput();
+		String textFieldInput = m.getTextFieldInput();
 		
+		// User not found --> send error mesage
+		boolean userFound = dbInterface.doesUserExist(email);
+		if (!userFound) { 
+			Message response = new Message("enqueueResponse");
+			response.setResponseStatus("emailInvalid");
+			sendMessage(response, s);
+		}
+		
+		// Queue not found --> send error message
+		boolean queueFound = dbInterface.doesQueueExist(qCode);
 	}
 	private void processDequeueRequest(Message m, Session s) {
 		
