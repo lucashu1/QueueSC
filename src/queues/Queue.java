@@ -2,39 +2,88 @@ package queues;
 
 import java.util.Vector;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import users.User;
+
+@DatabaseTable(tableName = "queues")
 public class Queue {
+	// Database field names
+    public static final String QCODE_FIELD_NAME = "qCode";
+    public static final String NAME_FIELD_NAME = "name";
+    public static final String DESCRIPTION_FIELD_NAME = "description";
+    public static final String OWNER_FIELD_NAME = "owner";
+    public static final String NUMFIELDDESCRIPTION_FIELD_NAME = "numFieldDescription";
+    public static final String TEXTFIELDDESCRIPTION_FIELD_NAME = "textFieldDescription";
+    public static final String ISNUMFIELDREQUIRED_FIELD_NAME = "isNumFieldRequired";
+    public static final String ISTEXTFIELDREQUIRED_FIELD_NAME = "isTextFieldRequired";
+    public static final String ISLOCATIONRESTRICTED_FIELD_NAME = "isLocationRestricted";    
+    public static final String ISPUBLIC_FIELD_NAME = "isPublic";
+    public static final String MAXSIZE_FIELD_NAME = "maxSize";
+    public static final String AVGWAITTIME_FIELD_NAME = "avgWaitTime";
+    public static final String NUMUSERSPROCESSED_FIELD_NAME = "numUsersProcessed";
+    public static final String QUEUEENTRIES_FIELD_NAME = "queueEntries";
+    public static final String LONGITUDE_FIELD_NAME = "longitude";
+    public static final String LATITUDE_FIELD_NAME = "latitude";
+    public static final String RADIUS_FIELD_NAME = "radius";
+
+	
 	// Member Variables
+    @DatabaseField(id = true)
 	private String qCode;
+    @DatabaseField
 	private String name;
+    @DatabaseField
 	private String description;
-	private String owner; // email of the queue creator
+    @DatabaseField
+	private User owner; // email of the queue creator
+    @DatabaseField
 	private String numFieldDescription;
+    @DatabaseField
 	private String textFieldDescription;
-	private boolean numFieldRequired;
-	private boolean textFieldRequired;
+    @DatabaseField
+	private boolean isNumFieldRequired;
+    @DatabaseField
+	private boolean isTextFieldRequired;
+    @DatabaseField
 	private boolean isLocationRestricted;
+    @DatabaseField
 	private boolean isPublic;
+    @DatabaseField
 	private int maxSize;
+    @DatabaseField
 	private double avgWaitTime;
+    @DatabaseField
 	private int numUsersProcessed;
+    @DatabaseField
 	private Vector<QueueEntry> queueEntries;
+    @DatabaseField
 	private double longitude;
+    @DatabaseField
 	private double latitude;
-	private double radius;
+    @DatabaseField
+	private double radius; // feet
+    
 	// TODO: Google Maps location
+    
+    // no-argument constructor for ORMLite
+    public Queue () {
+    	
+    }
 	
 	// Queue Constructor
 		// If num/text fields are required, those descriptions must be set manually
 		// If queue is location restricted, lat/long/radius must be set manually
-	public Queue(String qCode, String name, String description, String owner,
+	public Queue(String qCode, String name, String description, User owner,
 			boolean numFieldRequired, boolean textFieldRequired, boolean isLocationRestricted,
 			boolean isPublic, int maxSize) {
 		this.qCode = qCode;
 		this.name = name;
 		this.description = description;
 		this.owner = owner;
-		this.numFieldRequired = numFieldRequired;
-		this.textFieldRequired = textFieldRequired;
+		this.isNumFieldRequired = numFieldRequired;
+		this.isTextFieldRequired = textFieldRequired;
 		this.isLocationRestricted = isLocationRestricted;
 		this.isPublic = isPublic;
 		this.maxSize = maxSize;
@@ -94,11 +143,11 @@ public class Queue {
 		this.description = description;
 	}
 
-	public String getOwner() {
+	public User getOwner() {
 		return owner;
 	}
 
-	public void setOwner(String owner) {
+	public void setOwner(User owner) {
 		this.owner = owner;
 	}
 
@@ -191,19 +240,19 @@ public class Queue {
 	}
 
 	public boolean isNumFieldRequired() {
-		return numFieldRequired;
+		return isNumFieldRequired;
 	}
 
 	public void setNumFieldRequired(boolean numFieldRequired) {
-		this.numFieldRequired = numFieldRequired;
+		this.isNumFieldRequired = numFieldRequired;
 	}
 
 	public boolean isTextFieldRequired() {
-		return textFieldRequired;
+		return isTextFieldRequired;
 	}
 
 	public void setTextFieldRequired(boolean textFieldRequired) {
-		this.textFieldRequired = textFieldRequired;
+		this.isTextFieldRequired = textFieldRequired;
 	}
 	
 	

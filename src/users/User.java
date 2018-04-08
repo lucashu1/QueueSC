@@ -30,10 +30,6 @@ public class User {
     @DatabaseField
 	private String lastName;
     @DatabaseField
-    private ArrayList<Queue> enteredQueues;
-    @DatabaseField
-    private ArrayList<Queue> managedQueues;
-    @DatabaseField
     private String passwordHash;
     @DatabaseField
     private boolean isGuest;
@@ -116,21 +112,5 @@ public class User {
 	
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
-	}
-
-	public ArrayList<Queue> getEnteredQueues() {
-		return enteredQueues;
-	}
-	
-	public void setEnteredQueues(ArrayList<Queue> enteredQueues) {
-		this.enteredQueues = enteredQueues;
-	}
-	
-	public ArrayList<Queue> getManagedQueues() {
-		return managedQueues;
-	}
-	
-	public void setManagedQueues(ArrayList<Queue> managedQueues) {
-		this.managedQueues = managedQueues;
 	}
 }
