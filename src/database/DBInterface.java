@@ -7,6 +7,7 @@ import java.util.Vector;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
@@ -66,66 +67,13 @@ public class DBInterface {
 		return true;
 	}
 	
-	public User getUserFromDB(String userEmail) {
-		try {
-			User allegedUser = userDao.queryForId(userEmail);
-		} catch (SQLException se) {
-			System.out.println("Problem reading from db");
-		}
-
-	}
-	
-	public Queue getQueueFromDB(String qCode) {
-		
-	}
-	
-	public boolean addQueueEntryToDB(QueueEntry qe) {
-		// Returns true if the user was succesfully added
-		
-	}
-	
-	public boolean isUserInQueue(String userEmail, String qCode) {
-		// Returns true if the user is in the queue in the DB
-		
-		// Get the user object
-		User allegedUser = getUserFromDB()
-		QueryBuilder<QueueEntry, Integer> queryBuilder =queueEntryDao.queryBuilder();
-		// get the WHERE object to build our query
-		Where<QueueEntry, Integer> where = queryBuilder.where();
-		// the name field must be equal to "foo"
-		where.eq(QueueEntry.u, userEmail);
-		// and
-		where.and();
-		// the password field must be equal to "_secret"
-		where.eq(, "_secret");
-		PreparedQuery<Account> preparedQuery = queryBuilder.prepare();
-
-	}
-	
-	public Vector<User> getUsersInQueue(String qCode) {
-		// Returns a vector of user objects in queue; if queue DNE, returns empty vector
-		if (doesQueueExist(qCode)) {
-			
-		}
-	}
-	
-	public boolean doesQueueExist(String qCode) {
-		// Returns true if a queue exists with that qCode
-		try {
-			Queue allegedQueue = queueDao.queryForId(qCode);
-			if (allegedQueue == null) {
-				return false;
-			}
-			return true;
-		} catch (SQLException se) {
-			// There was some problem accessing the db
-			return false;
-		}
-	}
+	////////////////////////////
+	///// Add models to DB /////
+	////////////////////////////
 	
 	public boolean addUsertoDB(User u) {
 		// Returns true if the the user object was successfully added to DB
-		if (doesUserExist(u.getEmail())) {
+		if (getUserFromDB(u.getEmail()) == null) {
 			return false;
 		}
 		try {
@@ -137,18 +85,114 @@ public class DBInterface {
 		}
 	}
 	
-	public boolean doesUserExist(String email) {
-		try {
-			User allegedUser = userDao.queryForId(email);
-			if (allegedUser == null) {
-				return false;
-			} else {
-				return true;
-			}
-		} catch (SQLException se) {
-			System.out.println("There was a problem querying the database.");
-			return true;
+	public boolean addQueueToDB(Queue q) {
+		// Returns true if the the queue object was successfully added to DB
+		if (getQueueFromDB(q.getqCode()) == null) {
+			return false;
 		}
+		try {
+			queueDao.create(q);
+			return true;
+		} catch (SQLException se) {
+			// There was some kind of problem saving the user to the db
+			return false;
+		}
+	}
+	
+	public boolean addQueueEntryToDB(QueueEntry qe) {
+		// Returns true if the the queue object was successfully added to DB
+		if (getQueueEntryFromDB(qe.getQ().getqCode(), qe.getUser().getEmail()) == null) {
+			return false;
+		}
+		try {
+			queueDao.create(q);
+			return true;
+		} catch (SQLException se) {
+			// There was some kind of problem saving the user to the db
+			return false;
+		}			
+	}
+	
+	////////////////////////////
+	//// Get models from DB ////
+	////////////////////////////
+	
+	public User getUserFromDB(String userEmail) {
+		try {
+			User allegedUser = userDao.queryForId(userEmail);
+			return allegedUser;
+		} catch (SQLException se) {
+			System.out.println("Problem reading from db");
+			return (User) null;
+		}
+	}
+	
+	public Queue getQueueFromDB(String qCode) {
+		try {
+			Queue allegedQueue = queueDao.queryForId(qCode);
+			return allegedQueue;
+		} catch (SQLException se) {
+			System.out.println("Problem reading from db");
+			return (Queue) null;
+		}
+	}
+	
+	public QueueEntry getQueueEntryFromDB(String qcode, String email) {
+		
+	}
+
+	
+	public void updateQueuePositions (String qCode) {
+		
+	}
+	
+
+	
+	public boolean isUserInQueue(String userEmail, String qCode) {
+		// Returns true if the user is in the queue in the DB
+		
+		// Get the user object
+		User allegedUser = getUserFromDB(userEmail);
+		if (allegedUser == null) {
+			return false;
+		}
+		
+		// Get the queue object
+		Queue allegedQueue = getQueueFromDB(qCode);
+		if (allegedQueue == null) {
+			return false;
+		}
+		
+		// Build the query
+		QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
+		Where<QueueEntry, Integer> where = queryBuilder.where();
+		// the user in the entry must be the one we are looking for
+		where.eq(QueueEntry.u, allegedUser);
+		// and
+		where.and();
+		// it must be the correct queue
+		where.eq(QueueEntry.q, allegedQueue);
+		PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();
+		
+		// Run the query
+		queueEntryDao.query(preparedQuery);
+
+	}
+	
+	public Vector<User> getUsersInQueue(String qCode) {
+		// Returns a vector of user objects in queue; if queue DNE, returns empty vector
+		if (doesQueueExist(qCode)) {
+			
+		}
+	}
+
+	
+	public void removeUserFromQueue (String email, String qCode) {
+		// remove user from queue
+		
+		//update the positions of the people in the queue
+		updateQueuePositions(qCode);
+		
 	}
 	
 	public boolean deleteQueue(String qCode) {
@@ -160,10 +204,6 @@ public class DBInterface {
 		
 	}
 	
-	public boolean removeUserFromQueue(String email, String qCode) {
-		if ()
-	}
-	
 	
 	public int getPositionInQueue (String email, String qCode) {
 		if (isUserInQueue(email, qCode)) {
@@ -173,7 +213,7 @@ public class DBInterface {
 		}
 	}
 	
-	public void advanceQueue (String qCode) {
+	public QueueEntry advanceQueue (String qCode) {
 		
 	}
 }
