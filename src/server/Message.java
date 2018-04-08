@@ -36,7 +36,8 @@ import java.util.Vector;
 // LOAD INFO:
 	// pullQueueInfo
 		// Request: qCode
-		// Response: qCode, queueName, queueDescription, numFieldDescription, textFieldDescription,
+		// Response: qCode, queueName, queueDescription, email (of owner), numFieldRequired, textFieldRequired, 
+			// numFieldDescription, textFieldDescription,
 			// isLocationRestricted, isPublic, maxSize, latitude, longitude, radius,
 			// avgWaitTime, numUsersProcessed, numCurrentEntries
 			// - or -: failure (qCodeInvalid)

@@ -111,7 +111,7 @@ public class QueueSCServer {
 	}
 	private void processDeleteQueueRequest(Message m, Session s) {
 		String qCode = m.getqCode();
-		boolean isSuccess = dbInterface.deleteQueue(qCode); // Try to delete queue
+		boolean isSuccess = dbInterface.deleteQueueFromDB(qCode); // Try to delete queue
 		Message response = new Message("deleteQueueResponse");
 		if (isSuccess) { // Success --> send "success"
 			response.setResponseStatus("success");
@@ -232,7 +232,7 @@ public class QueueSCServer {
 		}
 		
 		// Make sure user is currently in queue
-		if (dbInterface.getPositionInQueue(email, qCode) == -1) {
+		if (dbInterface.getQueueEntryFromDB(email, qCode) == null) {
 			Message response = new Message("removeUserResponse");
 			response.setResponseStatus("userNotInQueue");
 			sendMessage(response, s);
@@ -331,7 +331,38 @@ public class QueueSCServer {
 	
 	// LOAD INFO TO DISPLAY
 	private void processPullQueueInfoRequest(Message m, Session s) {
+		String qCode = m.getqCode();
+		Queue q = dbInterface.getQueueFromDB(qCode);
+		Message response = new Message("pullQueueInfoResponse");
 		
+		// Queue not found --> send error message
+		if (q == null) {
+			response.setResponseStatus("qCodeInvalid");
+			sendMessage(response, s);
+			return;
+		}
+		
+		// Fill all fields
+		response.setqCode(qCode);
+		response.setQueueName(q.getName());
+		response.setQueueDescription(q.getDescription());
+		response.setEmail(q.getOwner());
+		response.setNumFieldRequired(q.isNumFieldRequired());
+		response.setTextFieldRequired(q.isTextFieldRequired());
+		response.setNumFieldDescription(q.getNumFieldDescription());
+		response.setTextFieldDescription(q.getTextFieldDescription());
+		response.setLocationRestricted(q.isLocationRestricted());
+		response.setLatitude(q.getLatitude());
+		response.setLongitude(q.getLongitude());
+		response.setRadius(q.getRadius());
+		response.setPublic(q.isPublic());
+		response.setMaxSize(q.getMaxSize());
+		response.setAvgWaitTime(q.getAvgWaitTime());
+		response.setNumUsersProcessed(q.getNumUsersProcessed());
+		response.setNumCurrentEntries(dbInterface.getEntriesInQueue(qCode).size());
+		
+		response.setResponseStatus("success");
+		sendMessage(response, s);
 	}
 	private void processUserInfoRequest(Message m, Session s) {
 		

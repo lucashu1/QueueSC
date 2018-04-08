@@ -94,6 +94,14 @@ public class Queue {
 		this.description = description;
 	}
 
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
 	public String getNumFieldDescription() {
 		return numFieldDescription;
 	}
