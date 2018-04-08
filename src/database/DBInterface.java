@@ -75,7 +75,7 @@ public class DBInterface {
 
 	}
 	
-	public Queue getQueueFromDB() {
+	public Queue getQueueFromDB(String qCode) {
 		
 	}
 	
