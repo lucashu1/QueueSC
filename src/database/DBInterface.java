@@ -105,7 +105,7 @@ public class DBInterface {
 			return false;
 		}
 		try {
-			queueDao.create(q);
+			queueEntryDao.create(qe);
 			return true;
 		} catch (SQLException se) {
 			// There was some kind of problem saving the user to the db
@@ -140,12 +140,19 @@ public class DBInterface {
 	public QueueEntry getQueueEntryFromDB(String qcode, String email) {
 		
 	}
-
+	
+	
+	/////////////////////////////
+	////// Queue Modifiers //////
+	/////////////////////////////
 	
 	public void updateQueuePositions (String qCode) {
 		
 	}
 	
+	/////////////////////////////
+	/////// Queue Queries ///////
+	/////////////////////////////
 
 	
 	public boolean isUserInQueue(String userEmail, String qCode) {
