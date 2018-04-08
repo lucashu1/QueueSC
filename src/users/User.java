@@ -24,19 +24,19 @@ public class User {
 
 	// Member Variables 
     @DatabaseField(id = true)
-	public String email;
+	private String email;
     @DatabaseField
-	public String firstName;
+	private String firstName;
     @DatabaseField
-	public String lastName;
+	private String lastName;
     @DatabaseField
-	public ArrayList<Queue> enteredQueues;
+    private ArrayList<Queue> enteredQueues;
     @DatabaseField
-	public ArrayList<Queue> managedQueues;
+    private ArrayList<Queue> managedQueues;
     @DatabaseField
-	public String passwordHash;
+    private String passwordHash;
     @DatabaseField
-	public boolean isGuest;
+    private boolean isGuest;
 	
 	// No-argument constructor for ORMLite
 	public User() {
