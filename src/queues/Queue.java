@@ -50,4 +50,126 @@ public class Queue {
 		}
 		return false;
 	}
+
+	public int getQueueID() {
+		return queueID;
+	}
+
+	public void setQueueID(int queueID) {
+		this.queueID = queueID;
+	}
+
+	public String getqCode() {
+		return qCode;
+	}
+
+	public void setqCode(String qCode) {
+		this.qCode = qCode;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getNumFieldDescription() {
+		return numFieldDescription;
+	}
+
+	public void setNumFieldDescription(String numFieldDescription) {
+		this.numFieldDescription = numFieldDescription;
+	}
+
+	public String getTextFieldDescription() {
+		return textFieldDescription;
+	}
+
+	public void setTextFieldDescription(String textFieldDescription) {
+		this.textFieldDescription = textFieldDescription;
+	}
+
+	public boolean isLocationRestricted() {
+		return isLocationRestricted;
+	}
+
+	public void setLocationRestricted(boolean isLocationRestricted) {
+		this.isLocationRestricted = isLocationRestricted;
+	}
+
+	public boolean isPublic() {
+		return isPublic;
+	}
+
+	public void setPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+
+	public int getMaxSize() {
+		return maxSize;
+	}
+
+	public void setMaxSize(int maxSize) {
+		this.maxSize = maxSize;
+	}
+
+	public double getAvgWaitTime() {
+		return avgWaitTime;
+	}
+
+	public void setAvgWaitTime(double avgWaitTime) {
+		this.avgWaitTime = avgWaitTime;
+	}
+
+	public int getNumUsersProcessed() {
+		return numUsersProcessed;
+	}
+
+	public void setNumUsersProcessed(int numUsersProcessed) {
+		this.numUsersProcessed = numUsersProcessed;
+	}
+
+	public Vector<QueueEntry> getQueueEntries() {
+		return queueEntries;
+	}
+
+	public void setQueueEntries(Vector<QueueEntry> queueEntries) {
+		this.queueEntries = queueEntries;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getRadius() {
+		return radius;
+	}
+
+	public void setRadius(double radius) {
+		this.radius = radius;
+	}
+	
+	
 }

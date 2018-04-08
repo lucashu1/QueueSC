@@ -12,7 +12,9 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 import database.DBInterface;
+import queues.Queue;
 import queues.QueueManager;
+import users.User;
 
 @ServerEndpoint(value = "/ws",
 	decoders = MessageDecoder.class, 
@@ -97,6 +99,14 @@ public class QueueSCServer {
 		
 		// Queue not found --> send error message
 		boolean queueFound = dbInterface.doesQueueExist(qCode);
+		if (!queueFound) {
+			Message response = new Message("enqueueResponse");
+			response.setResponseStatus("qCodeInvalid");
+			sendMessage(response, s);
+		}
+		
+		User u = dbInterface.getUserFromDB(email);
+		Queue q = dbInterface.getQueueFromDB(qCode);
 	}
 	private void processDequeueRequest(Message m, Session s) {
 		
