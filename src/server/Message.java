@@ -1,49 +1,50 @@
 package server;
 
 import java.io.Serializable;
+import java.util.Vector;
 
-// ---------- POSSIBLE MESSAGE TYPES ----------
+// ---------- POSSIBLE MESSAGE TYPES & NECESSARY FIELDS ----------
 // QUEUE MODIFICATION:
-	// CreateQueue
+	// createQueue
 		// Request: qCode, queueName, queueDescription, numFieldDescription, textFieldDescription, 
 			// isLocationRestricted, isPublic, maxSize, latitude, longitude, radius
 		// Response: success/failure (qCodeTaken)
-	// DeleteQueue
+	// deleteQueue
 		// Request: qCode
 		// Response: success/failure (qCodeInvalid)
-	// Enqueue
+	// enqueue
 		// Request: qCode, email, numFieldInput, textFieldInput, latitude, longitude
 		// Response: success/failure (qCodeInvalid, emailInvalid)
-	// Dequeue
+	// dequeue
 		// Request: qCode
 		// Response: success/failure (qCodeInvalid)
-	// RemoveUser
+	// removeUser
 		// Request: qCode, email
 		// Response: success/failure (qCodeInvalid, emailInvalid)
 
 // USER:
-	// RegisterUser
+	// registerUser
 		// Request: email, firstName, lastName, password
 		// Response: success/failure (emailTaken, emailInvalid)
-	// UserLogin
+	// userLogin
 		// Request: email, password
 		// Response: success/failure (emailDoesNotExist, incorrectPassword)
-	// GuestLogin
+	// guestLogin
 		// Request: email, firstName, lastName, qCode
 		// Response: success/failure (emailTaken, qCodeInvalid)
 
 // LOAD INFO:
-	// PullQueueInfo
+	// pullQueueInfo
 		// Request: qCode
 		// Response: qCode, queueName, queueDescription, numFieldDescription, textFieldDescription,
 			// isLocationRestricted, isPublic, maxSize, latitude, longitude, radius,
 			// avgWaitTime, numUsersProcessed, numCurrentEntries
 			// - or -: failure (qCodeInvalid)
-	// PullUserInfo
+	// pullUserInfo
 		// Request: email
 		// Response: email, firstName, lastName, queuesEntered, queuesEnteredPositions, queuesManaging
 			// - or- : failure (emailInvalid)
-	// ForceRefresh
+	// forceRefresh
 		// (Force client to refresh if queue is modified)
 
 public class Message implements Serializable {
@@ -79,10 +80,182 @@ public class Message implements Serializable {
 	private double longitude;
 	private double latitude;
 
-	// Info to display
-	private String queuesEnteredNames; // Semicolon-separated list of names for queues the inputted user is in
-	private String queuesEnteredCodes; // Semicolon-separated list of qCodes for queues the inputted user is in
-	private String queuesEnteredPositions; // Semicolon-separated list of positions (ints) for queues the inputted user is in
-	private String queuesManagingNames; // Semicolon-separated list of names for queues the inputted user is managing
-	private String queuesManagingCodes; // Semicolon-separated list of qCodes for queues the inputted user is managing
+	// General info to display
+	private Vector<String> queuesEnteredNames; // List of names for queues the inputted user is in
+	private Vector<String> queuesEnteredCodes; // List of qCodes for queues the inputted user is in
+	private Vector<Integer> queuesEnteredPositions; // List of positions (ints) for queues the inputted user is in
+	private Vector<String> queuesManagingNames; // List of names for queues the inputted user is managing
+	private Vector<String> queuesManagingCodes; // List of qCodes for queues the inputted user is managing
+	
+
+	// ---------- CONSTRUCTOR ----------
+	// YOU MUST MANUALLY FILL OUT THE NECESSARY FIELDS FOR THE GIVEN TYPE! (Use setters)
+	public Message(String type) {
+		this.type = type;
+	}
+	
+	// ---------- GETTERS/SETTERS ----------
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getResponseStatus() {
+		return responseStatus;
+	}
+	public void setResponseStatus(String responseStatus) {
+		this.responseStatus = responseStatus;
+	}
+	public String getqCode() {
+		return qCode;
+	}
+	public void setqCode(String qCode) {
+		this.qCode = qCode;
+	}
+	public String getQueueName() {
+		return queueName;
+	}
+	public void setQueueName(String queueName) {
+		this.queueName = queueName;
+	}
+	public String getQueueDescription() {
+		return queueDescription;
+	}
+	public void setQueueDescription(String queueDescription) {
+		this.queueDescription = queueDescription;
+	}
+	public String getNumFieldDescription() {
+		return numFieldDescription;
+	}
+	public void setNumFieldDescription(String numFieldDescription) {
+		this.numFieldDescription = numFieldDescription;
+	}
+	public String getTextFieldDescription() {
+		return textFieldDescription;
+	}
+	public void setTextFieldDescription(String textFieldDescription) {
+		this.textFieldDescription = textFieldDescription;
+	}
+	public boolean isLocationRestricted() {
+		return isLocationRestricted;
+	}
+	public void setLocationRestricted(boolean isLocationRestricted) {
+		this.isLocationRestricted = isLocationRestricted;
+	}
+	public boolean isPublic() {
+		return isPublic;
+	}
+	public void setPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+	public int getMaxSize() {
+		return maxSize;
+	}
+	public void setMaxSize(int maxSize) {
+		this.maxSize = maxSize;
+	}
+	public double getRadius() {
+		return radius;
+	}
+	public void setRadius(double radius) {
+		this.radius = radius;
+	}
+	public double getAvgWaitTime() {
+		return avgWaitTime;
+	}
+	public void setAvgWaitTime(double avgWaitTime) {
+		this.avgWaitTime = avgWaitTime;
+	}
+	public int getNumUsersProcessed() {
+		return numUsersProcessed;
+	}
+	public void setNumUsersProcessed(int numUsersProcessed) {
+		this.numUsersProcessed = numUsersProcessed;
+	}
+	public int getNumCurrentEntries() {
+		return numCurrentEntries;
+	}
+	public void setNumCurrentEntries(int numCurrentEntries) {
+		this.numCurrentEntries = numCurrentEntries;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public int getNumFieldInput() {
+		return numFieldInput;
+	}
+	public void setNumFieldInput(int numFieldInput) {
+		this.numFieldInput = numFieldInput;
+	}
+	public String getTextFieldInput() {
+		return textFieldInput;
+	}
+	public void setTextFieldInput(String textFieldInput) {
+		this.textFieldInput = textFieldInput;
+	}
+	public double getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+	public double getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+	public Vector<String> getQueuesEnteredNames() {
+		return queuesEnteredNames;
+	}
+	public void setQueuesEnteredNames(Vector<String> queuesEnteredNames) {
+		this.queuesEnteredNames = queuesEnteredNames;
+	}
+	public Vector<String> getQueuesEnteredCodes() {
+		return queuesEnteredCodes;
+	}
+	public void setQueuesEnteredCodes(Vector<String> queuesEnteredCodes) {
+		this.queuesEnteredCodes = queuesEnteredCodes;
+	}
+	public Vector<Integer> getQueuesEnteredPositions() {
+		return queuesEnteredPositions;
+	}
+	public void setQueuesEnteredPositions(Vector<Integer> queuesEnteredPositions) {
+		this.queuesEnteredPositions = queuesEnteredPositions;
+	}
+	public Vector<String> getQueuesManagingNames() {
+		return queuesManagingNames;
+	}
+	public void setQueuesManagingNames(Vector<String> queuesManagingNames) {
+		this.queuesManagingNames = queuesManagingNames;
+	}
+	public Vector<String> getQueuesManagingCodes() {
+		return queuesManagingCodes;
+	}
+	public void setQueuesManagingCodes(Vector<String> queuesManagingCodes) {
+		this.queuesManagingCodes = queuesManagingCodes;
+	}
+
 }
