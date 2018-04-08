@@ -43,7 +43,7 @@ import java.util.Vector;
 			// - or -: failure (qCodeInvalid)
 	// pullUserInfo
 		// Request: email
-		// Response: email, firstName, lastName, queuesEntered, queuesEnteredPositions, queuesManaging
+		// Response: email, firstName, lastName, queuesEntered (qCodes), queuesEnteredPositions, queuesManaging (qCodes)
 			// - or- : failure (emailInvalid)
 	// forceRefresh
 		// (Force client to refresh if queue is modified)

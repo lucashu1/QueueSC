@@ -34,16 +34,30 @@ public class QueueSCServer {
 	
 	@OnMessage
 	public void onMessage(Session session, Message message) {
-		// TODO: handle message
-		System.out.println(message);
-		try {
-			for(Session s : sessions) {
-				s.getBasicRemote().sendObject(message);
-			}
-		} catch (IOException | EncodeException e) {
-			e.printStackTrace();
+		if (message.getType().equals("createQueueRequest")) {
+			processCreateQueueRequest(message, session);
+		} else if (message.getType().equals("deleteQueueRequest")) {
+			processDeleteQueueRequest(message, session);
+		} else if (message.getType().equals("enqueueRequest")) {
+			processEnqueueRequest(message, session);
+		} else if (message.getType().equals("dequeueRequest")) {
+			processDequeueRequest(message, session);
+		} else if (message.getType().equals("removeUserRequest")) {
+			processRemoveUserRequest(message, session);
+		} else if (message.getType().equals("registerUserRequest")) {
+			processRegisterUserRequest(message, session);
+		} else if (message.getType().equals("userLoginRequest")) {
+			processUserLoginRequest(message, session);
+		} else if (message.getType().equals("guestLoginRequest")) {
+			processGuestLoginRequest(message, session);
+		} else if (message.getType().equals("pullQueueInfoRequest")) {
+			processPullQueueInfoRequest(message, session);
+		} else if (message.getType().equals("pullUserInfoRequest")) {
+			processPullUserInfoRequest(message, session);
+		} else {
+			System.out.println("Unknown message type received: " + message.getType());
 		}
-	}
+	} 
 	
 	@OnClose
 	public void close(Session session) {
@@ -364,8 +378,21 @@ public class QueueSCServer {
 		response.setResponseStatus("success");
 		sendMessage(response, s);
 	}
-	private void processUserInfoRequest(Message m, Session s) {
-		
+	private void processPullUserInfoRequest(Message m, Session s) {
+		String email = m.getEmail();
+		User u = dbInterface.getUserFromDB(email);
+		Message response = new Message("pullUserInfoResponse");
+		if (u == null) { // User not found
+			response.setResponseStatus("emailInvalid");
+			sendMessage(response, s);
+			return;
+		}
+		response.setEmail(email);
+		response.setFirstName(u.getFirstName());
+		response.setLastName(u.getLastName());
+		// Queues entered (qCodes)
+		// Queues entered positions
+		// Queues managing (qCodes)
 	}
 	
 	// OTHER
