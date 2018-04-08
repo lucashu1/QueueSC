@@ -2,6 +2,7 @@ package database;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 
 import com.j256.ormlite.dao.Dao;
@@ -137,37 +138,17 @@ public class DBInterface {
 		}
 	}
 	
-	public QueueEntry getQueueEntryFromDB(String qcode, String email) {
-		
-	}
-	
-	
-	/////////////////////////////
-	////// Queue Modifiers //////
-	/////////////////////////////
-	
-	public void updateQueuePositions (String qCode) {
-		
-	}
-	
-	/////////////////////////////
-	/////// Queue Queries ///////
-	/////////////////////////////
-
-	
-	public boolean isUserInQueue(String userEmail, String qCode) {
-		// Returns true if the user is in the queue in the DB
-		
+	public QueueEntry getQueueEntryFromDB(String qCode, String email) {
 		// Get the user object
-		User allegedUser = getUserFromDB(userEmail);
+		User allegedUser = getUserFromDB(email);
 		if (allegedUser == null) {
-			return false;
+			return (QueueEntry) null;
 		}
 		
 		// Get the queue object
 		Queue allegedQueue = getQueueFromDB(qCode);
 		if (allegedQueue == null) {
-			return false;
+			return (QueueEntry) null;
 		}
 		
 		// Build the query
@@ -181,18 +162,23 @@ public class DBInterface {
 		where.eq(QueueEntry.q, allegedQueue);
 		PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();
 		
-		// Run the query
-		queueEntryDao.query(preparedQuery);
-
-	}
-	
-	public Vector<User> getUsersInQueue(String qCode) {
-		// Returns a vector of user objects in queue; if queue DNE, returns empty vector
-		if (doesQueueExist(qCode)) {
-			
+		// Run the query and return the result if appropriate
+		List<QueueEntry> results = queueEntryDao.query(preparedQuery);
+		if (results.size() != 1) {
+			return (QueueEntry) null;
+		} else {
+			return results.get(0);
 		}
 	}
-
+	
+	
+	/////////////////////////////
+	////// Queue Modifiers //////
+	/////////////////////////////
+	
+	public void updateQueuePositions (String qCode) {
+		
+	}
 	
 	public void removeUserFromQueue (String email, String qCode) {
 		// remove user from queue
@@ -202,15 +188,24 @@ public class DBInterface {
 		
 	}
 	
-	public boolean deleteQueue(String qCode) {
-		// Returns true if the queue was deleted successfully
-		
+	public QueueEntry advanceQueue (String qCode) {
+		Vector<QueueEntry>
 	}
 	
-	public boolean deleteUser(String email) {
-		
+	/////////////////////////////
+	/////// Queue Queries ///////
+	/////////////////////////////
+	
+	public Vector<User> getUsersInQueue(String qCode) {
+		// Returns a vector of user objects in queue; if queue DNE, returns empty vector
+		if (doesQueueExist(qCode)) {
+			
+		}
 	}
 	
+	public Vector<QueueEntry> getEntriesInQueue(String qCode) { 
+		
+	}
 	
 	public int getPositionInQueue (String email, String qCode) {
 		if (isUserInQueue(email, qCode)) {
@@ -220,7 +215,25 @@ public class DBInterface {
 		}
 	}
 	
-	public QueueEntry advanceQueue (String qCode) {
+
+	/////////////////////////////
+	/////// Delete models ///////
+	/////////////////////////////
+
+	public boolean deleteUser(String email) {
 		
 	}
+
+	public boolean deleteQueue(String qCode) {
+		// Returns true if the queue was deleted successfully
+		
+	}
+	
+	public boolean deleteQueueEntry(String)
+	
+
+	
+	
+
+
 }
