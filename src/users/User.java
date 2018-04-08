@@ -5,24 +5,45 @@ import java.util.ArrayList;
 
 import javax.xml.bind.DatatypeConverter;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import queues.Queue;
 
+@DatabaseTable(tableName = "users")
 public class User {
-	//Member Variables 
-	public int id;
-	public String firstName;
-	public String lastName;
+	
+	// Database field names
+    public static final String EMAIL_FIELD_NAME = "email";
+    public static final String PWDHASH_FIELD_NAME = "passwordhash";
+    public static final String FIRSTNAME_FIELD_NAME = "firstName";
+    public static final String LASTNAME_FIELD_NAME = "lastName";
+    public static final String ENTEREDQUEUES_FIELD_NAME = "enteredQueues";
+    public static final String MANAGEDQUEUES_FIELD_NAME = "managedQueues";
+    public static final String ISGUEST_FIELD_NAME = "isGuest";
+
+	// Member Variables 
+    @DatabaseField(id = true)
 	public String email;
+    @DatabaseField
+	public String firstName;
+    @DatabaseField
+	public String lastName;
+    @DatabaseField
 	public ArrayList<Queue> enteredQueues;
+    @DatabaseField
 	public ArrayList<Queue> managedQueues;
+    @DatabaseField
 	public String passwordHash;
+    @DatabaseField
 	public boolean isGuest;
 	
-	//Constructor
+	// No-argument constructor for ORMLite
 	public User() {
 		
 	}
 	
+	// Normal constructor
 	public User(String fn, String ln, String e)
 	{
 		firstName=fn;
@@ -30,7 +51,8 @@ public class User {
 		email=e;
 		
 	}
-	//Member Functions
+	
+	// Member Functions
 	
 	public void leaveQueue(Queue q)
 	{
@@ -72,41 +94,43 @@ public class User {
 		}	
 	}
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
 	public String getEmail() {
 		return email;
 	}
+	
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+	public String getFirstName() {
+		return firstName;
+	}
+	
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	
+	public String getLastName() {
+		return lastName;
+	}
+	
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
 	public ArrayList<Queue> getEnteredQueues() {
 		return enteredQueues;
 	}
+	
 	public void setEnteredQueues(ArrayList<Queue> enteredQueues) {
 		this.enteredQueues = enteredQueues;
 	}
+	
 	public ArrayList<Queue> getManagedQueues() {
 		return managedQueues;
 	}
+	
 	public void setManagedQueues(ArrayList<Queue> managedQueues) {
 		this.managedQueues = managedQueues;
 	}
-		
 }

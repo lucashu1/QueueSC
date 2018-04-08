@@ -10,6 +10,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.UpdateBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
 
@@ -198,6 +199,21 @@ public class DBInterface {
 		}
 	}
 	
+	////////////////////////////////////////////
+	//////// Update Existing rows in DB ////////
+	////////////////////////////////////////////
+	public boolean incrementNumUsersProcessed(String qCode) {
+	 	
+		UpdateBuilder<Queue, String> updateBuilder = queueDao.updateBuilder();
+		// update the password to be "none"
+		updateBuilder.updateColumnValue("password", "none");
+		// only update the rows where password is null
+		updateBuilder.where().eq(Queue.qCode, qCode);
+		updateBuilder.update();
+	}
+
+	
+	
 	
 	/////////////////////////////
 	////// Queue Modifiers //////
@@ -220,6 +236,12 @@ public class DBInterface {
 		// returns the queueEntry that will be popped from the queue
 		QueueEntry topOfQueue = getQueueEntryFromDBByPosition(qCode, 1);
 		deleteQueueEntryFromDB()
+		
+		// Update the average waiting time
+		
+		// increment num users processed
+		
+		// update the row in the database
 		
 	}
 	
@@ -259,7 +281,7 @@ public class DBInterface {
 	// TODO:
 
 	public boolean deleteUserFromDB(String email) {
-		
+		userDao.deleteById(email);	
 	}
 
 	public boolean deleteQueueFromDB(String qCode) {
