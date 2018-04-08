@@ -14,13 +14,13 @@ import java.util.Vector;
 		// Response: success/failure (qCodeInvalid)
 	// enqueue
 		// Request: qCode, email, numFieldInput, textFieldInput, (latitude, longitude)
-		// Response: success/failure (qCodeInvalid, emailInvalid, missingFormInput, userOutOfRange)
+		// Response: success/failure (qCodeInvalid, emailInvalid, missingFormInput, userOutOfRange, queueAlreadyFull)
 	// dequeue
 		// Request: qCode
 		// Response: success/failure (qCodeInvalid)
 	// removeUser
 		// Request: qCode, email
-		// Response: success/failure (qCodeInvalid, emailInvalid)
+		// Response: success/failure (qCodeInvalid, emailInvalid, userNotInQueue)
 
 // USER:
 	// registerUser

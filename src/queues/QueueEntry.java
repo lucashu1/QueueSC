@@ -12,6 +12,7 @@ public class QueueEntry {
 	private int numFieldInput;
 	private User u;
 	private Queue q;
+	private int position;
 	
 	// QueueEntry constructor
 	public QueueEntry(User u, Queue q, String textFieldInput, int numFieldInput) {

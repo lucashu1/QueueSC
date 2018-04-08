@@ -14,7 +14,6 @@ import javax.websocket.server.ServerEndpoint;
 import database.DBInterface;
 import queues.Queue;
 import queues.QueueEntry;
-import queues.QueueManager;
 import users.User;
 
 @ServerEndpoint(value = "/ws",
@@ -60,13 +59,15 @@ public class QueueSCServer {
 	// ---------- PROCESS MESSAGES ---------- //
 	// Send Message m to Session s. Return true if successful
 	private boolean sendMessage(Message m, Session s) {
-		try {
-			s.getBasicRemote().sendObject(m);
-		} catch (IOException | EncodeException e) {
-			e.printStackTrace();
-			return false;
+		synchronized(s) {
+			try {
+				s.getBasicRemote().sendObject(m);
+			} catch (IOException | EncodeException e) {
+				e.printStackTrace();
+				return false;
+			}
+			return true;
 		}
-		return true;
 	}
 	
 	// QUEUE FUNCTIONALITY
@@ -81,10 +82,11 @@ public class QueueSCServer {
 		boolean isPublic = m.isPublic();
 		int maxSize = m.getMaxSize();
 		
-		if (dbInterface.doesQueueExist(qCode)) { // qCode is taken --> send error message
+		if (dbInterface.getQueueFromDB(qCode) == null) { // qCode is taken --> send error message
 			Message resp = new Message("createQueueResposne");
 			resp.setResponseStatus("qCodeTaken");
 			sendMessage(resp, s);
+			return;
 		}
 		
 		Queue q = new Queue(qCode, name, description, owner, numFieldRequired, textFieldRequired, isLocationRestricted, isPublic, maxSize);
@@ -103,6 +105,9 @@ public class QueueSCServer {
 		}
 		
 		dbInterface.addQueueToDB(q);
+		Message resp = new Message("createQueueResponse"); // Success message
+		resp.setResponseStatus("success");
+		sendMessage(resp, s);
 	}
 	private void processDeleteQueueRequest(Message m, Session s) {
 		String qCode = m.getqCode();
@@ -122,35 +127,46 @@ public class QueueSCServer {
 		String textFieldInput = m.getTextFieldInput();
 		
 		// User not found --> send error mesage
-		boolean userFound = dbInterface.doesUserExist(email);
+		boolean userFound = (dbInterface.getUserFromDB(email) == null);
 		if (!userFound) { 
 			Message response = new Message("enqueueResponse");
 			response.setResponseStatus("emailInvalid");
 			sendMessage(response, s);
+			return;
 		}
 		
 		// Queue not found --> send error message
-		boolean queueFound = dbInterface.doesQueueExist(qCode);
+		boolean queueFound = (dbInterface.getQueueFromDB(qCode) == null);
 		if (!queueFound) {
 			Message response = new Message("enqueueResponse");
 			response.setResponseStatus("qCodeInvalid");
 			sendMessage(response, s);
+			return;
 		}
 		
 		User u = dbInterface.getUserFromDB(email);
 		Queue q = dbInterface.getQueueFromDB(qCode);
+		
+		// Check if queue is already full
+		if (dbInterface.getEntriesInQueue(qCode).size() >= q.getMaxSize()) {
+			Message response = new Message("enqueueResponse");
+			response.setResponseStatus("queueAlreadyFull");
+			sendMessage(response, s);
+		}
 		
 		// Check for valid numerical input (if necessary)
 		if (q.isNumFieldRequired() && numFieldInput == null) {
 			Message response = new Message("enqueueResponse");
 			response.setResponseStatus("missingFormInput");
 			sendMessage(response, s);
+			return;
 		}
 		// Check for valid text input (if necessary)
 		if (q.isTextFieldRequired() && (textFieldInput == null || textFieldInput.equals(""))) {
 			Message response = new Message("enqueueResponse");
 			response.setResponseStatus("missingFormInput");
 			sendMessage(response, s);
+			return;
 		}
 		
 		// Check for user within bounds (if necessary)
@@ -161,29 +177,156 @@ public class QueueSCServer {
 				Message resp = new Message("enqueueResponse");
 				resp.setResponseStatus("userOutOfRange");
 				sendMessage(resp, s);
+				return;
 			}
 		}
 		
 		// Add queue entry
 		QueueEntry qe = new QueueEntry(u, q, textFieldInput, numFieldInput);
 		dbInterface.addQueueEntryToDB(qe);
+		Message resp = new Message("enqueueResponse");
+		resp.setResponseStatus("success");
+		sendMessage(resp, s);
+		
+		// Force other users looking at this queue to refresh
+		forceOthersRefresh(qCode, s);
 	}
 	private void processDequeueRequest(Message m, Session s) {
+		String qCode = m.getqCode();
+		if (dbInterface.getQueueFromDB(qCode) == null) { // Queue does not exist --> send error message
+			Message resp = new Message("dequeueResponse");
+			resp.setResponseStatus("qCodeInvalid");
+			sendMessage(resp, s);
+			return;
+		}
 		
+		// Success!
+		QueueEntry qe = dbInterface.advanceQueue(qCode);
+		Message resp = new Message("dequeueResponse");
+		resp.setResponseStatus("success");
+		sendMessage(resp, s);
+		
+		// Force other users looking at this queue to refresh
+		forceOthersRefresh(qCode, s);
 	}
 	private void processRemoveUserRequest(Message m, Session s) {
+		String qCode = m.getqCode();
+		String email = m.getEmail();
 		
+		// User not found --> send error mesage
+		boolean userFound = (dbInterface.getUserFromDB(email) == null);
+		if (!userFound) { 
+			Message response = new Message("removeUserResponse");
+			response.setResponseStatus("emailInvalid");
+			sendMessage(response, s);
+			return;
+		}
+		
+		// Queue not found --> send error message
+		boolean queueFound = (dbInterface.getQueueFromDB(qCode) == null);
+		if (!queueFound) {
+			Message response = new Message("removeUserResponse");
+			response.setResponseStatus("qCodeInvalid");
+			sendMessage(response, s);
+			return;
+		}
+		
+		// Make sure user is currently in queue
+		if (dbInterface.getPositionInQueue(email, qCode) == -1) {
+			Message response = new Message("removeUserResponse");
+			response.setResponseStatus("userNotInQueue");
+			sendMessage(response, s);
+			return;
+		}
+		
+		// Remove user
+		dbInterface.removeUserFromQueue(email, qCode);
+		Message response = new Message("removeUserResponse");
+		response.setResponseStatus("success");
+		sendMessage(response, s);
+		
+		forceOthersRefresh(qCode, s);
 	}
 	
 	// USER FUNCTIONALITY
 	private void processRegisterUserRequest(Message m, Session s) {
+		String email = m.getEmail();
+		String firstName = m.getFirstName();
+		String lastName = m.getLastName();
+		String password = m.getPassword();
 		
+		User u = new User(firstName, lastName, email);
+		u.setPasswordHash(u.hashPassword(password));
+		
+		Message response = new Message("registerUserResponse");
+		
+		// User already exists
+		if (dbInterface.getUserFromDB(email) != null) {
+			response.setResponseStatus("emailTaken");
+			sendMessage(response, s);
+			return;
+		}
+		
+		// Add user to DB, send success message
+		dbInterface.addUsertoDB(u);
+		response.setResponseStatus("success");
+		sendMessage(response, s);
 	}
 	private void processUserLoginRequest(Message m, Session s) {
+		String email = m.getEmail();
+		String password = m.getPassword();
+		User u = dbInterface.getUserFromDB(email);
+		Message response = new Message("userLoginResponse");
 		
+		// User not found
+		if (u == null) {
+			response.setResponseStatus("emailDoesNotExist");
+			sendMessage(response, s);
+			return;
+		}
+		
+		// Incorrect password
+		if (!u.isPasswordValid(password)) {
+			response.setResponseStatus("incorrectPassword");
+			sendMessage(response, s);
+			return;
+		}
+		
+		// Else, successfully logged in
+		response.setResponseStatus("success");
+		response.setEmail(email);
+		sendMessage(response, s);
 	}
 	private void processGuestLoginRequest(Message m, Session s) {
+		String email = m.getEmail();
+		String firstName = m.getFirstName();
+		String lastName = m.getLastName();
+		String qCode = m.getqCode();
+		Message response = new Message("guestLoginResponse");
 		
+		// User already exists
+		if (dbInterface.getUserFromDB(email) != null) {
+			response.setResponseStatus("emailTaken");
+			sendMessage(response, s);
+			return;
+		}
+		
+		// Queue not found --> send error message
+		boolean queueFound = (dbInterface.getQueueFromDB(qCode) == null);
+		if (!queueFound) {
+			response.setResponseStatus("qCodeInvalid");
+			sendMessage(response, s);
+			return;
+		}
+		
+		User u = new User(firstName, lastName, email);
+		u.isGuest = true;
+		
+		// Add guest user to DB
+		dbInterface.addUsertoDB(u);
+		response.setResponseStatus("success");
+		response.setEmail(email);
+		sendMessage(response, s);
 	}
 	
 	// LOAD INFO TO DISPLAY
@@ -195,10 +338,14 @@ public class QueueSCServer {
 	}
 	
 	// OTHER
-	// Send a "refresh" message to every session
-	private void forceAllSessionsRefresh() {
+	// Send a "refresh" message to every relevant session, given the inputted qCode
+	private void forceOthersRefresh(String qCode, Session originalSession) {
 		for (Session s : sessions) {
+			if (s == originalSession) { // don't force user who created the change to refresh
+				continue;
+			}
 			Message m = new Message("forceRefresh");
+			m.setqCode(qCode);
 			sendMessage(m, s);
 		}
 	}

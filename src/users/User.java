@@ -16,6 +16,7 @@ public class User {
 	public ArrayList<Queue> enteredQueues;
 	public ArrayList<Queue> managedQueues;
 	public String passwordHash;
+	public boolean isGuest;
 	
 	//Constructor
 	public User() {
