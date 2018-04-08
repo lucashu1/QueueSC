@@ -4,12 +4,14 @@ import java.util.Vector;
 
 public class Queue {
 	// Member Variables
-	private int queueID;
 	private String qCode;
 	private String name;
 	private String description;
+	private String owner; // email of the queue creator
 	private String numFieldDescription;
 	private String textFieldDescription;
+	private boolean numFieldRequired;
+	private boolean textFieldRequired;
 	private boolean isLocationRestricted;
 	private boolean isPublic;
 	private int maxSize;
@@ -20,6 +22,23 @@ public class Queue {
 	private double latitude;
 	private double radius;
 	// TODO: Google Maps location
+	
+	// Queue Constructor
+		// If num/text fields are required, those descriptions must be set manually
+		// If queue is location restricted, lat/long/radius must be set manually
+	public Queue(String qCode, String name, String description, String owner,
+			boolean numFieldRequired, boolean textFieldRequired, boolean isLocationRestricted,
+			boolean isPublic, int maxSize) {
+		this.qCode = qCode;
+		this.name = name;
+		this.description = description;
+		this.owner = owner;
+		this.numFieldRequired = numFieldRequired;
+		this.textFieldRequired = textFieldRequired;
+		this.isLocationRestricted = isLocationRestricted;
+		this.isPublic = isPublic;
+		this.maxSize = maxSize;
+	}
 	
 	//getPosition returns int
 	//enqueue adds new entrant with 
@@ -49,14 +68,6 @@ public class Queue {
 			}
 		}
 		return false;
-	}
-
-	public int getQueueID() {
-		return queueID;
-	}
-
-	public void setQueueID(int queueID) {
-		this.queueID = queueID;
 	}
 
 	public String getqCode() {
@@ -169,6 +180,22 @@ public class Queue {
 
 	public void setRadius(double radius) {
 		this.radius = radius;
+	}
+
+	public boolean isNumFieldRequired() {
+		return numFieldRequired;
+	}
+
+	public void setNumFieldRequired(boolean numFieldRequired) {
+		this.numFieldRequired = numFieldRequired;
+	}
+
+	public boolean isTextFieldRequired() {
+		return textFieldRequired;
+	}
+
+	public void setTextFieldRequired(boolean textFieldRequired) {
+		this.textFieldRequired = textFieldRequired;
 	}
 	
 	

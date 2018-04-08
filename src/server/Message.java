@@ -6,15 +6,15 @@ import java.util.Vector;
 // ---------- POSSIBLE MESSAGE TYPES & NECESSARY FIELDS ----------
 // QUEUE MODIFICATION:
 	// createQueue
-		// Request: qCode, queueName, queueDescription, numFieldDescription, textFieldDescription, 
-			// isLocationRestricted, isPublic, maxSize, latitude, longitude, radius
+		// Request: qCode, queueName, queueDescription, email (of owner), (numFieldDescription, textFieldDescription), 
+			// isLocationRestricted, isPublic, maxSize, (latitude, longitude, radius)
 		// Response: success/failure (qCodeTaken)
 	// deleteQueue
 		// Request: qCode
 		// Response: success/failure (qCodeInvalid)
 	// enqueue
-		// Request: qCode, email, numFieldInput, textFieldInput, latitude, longitude
-		// Response: success/failure (qCodeInvalid, emailInvalid)
+		// Request: qCode, email, numFieldInput, textFieldInput, (latitude, longitude)
+		// Response: success/failure (qCodeInvalid, emailInvalid, missingFormInput, userOutOfRange)
 	// dequeue
 		// Request: qCode
 		// Response: success/failure (qCodeInvalid)
@@ -60,6 +60,8 @@ public class Message implements Serializable {
 	private String queueDescription;
 	private String numFieldDescription;
 	private String textFieldDescription;
+	private boolean numFieldRequired;
+	private boolean textFieldRequired;
 	private boolean isLocationRestricted;
 	private boolean isPublic;
 	private int maxSize;
@@ -73,7 +75,7 @@ public class Message implements Serializable {
 	private String firstName;
 	private String lastName;
 	private String password;
-	private int numFieldInput; // For joining a queue, if necessary
+	private Integer numFieldInput; // For joining a queue, if necessary
 	private String textFieldInput; // For joining a queue, if necessary
 	
 	// Location info
@@ -137,6 +139,26 @@ public class Message implements Serializable {
 	public void setTextFieldDescription(String textFieldDescription) {
 		this.textFieldDescription = textFieldDescription;
 	}
+	public boolean isNumFieldRequired() {
+		return numFieldRequired;
+	}
+
+	public void setNumFieldRequired(boolean numFieldRequired) {
+		this.numFieldRequired = numFieldRequired;
+	}
+
+	public boolean isTextFieldRequired() {
+		return textFieldRequired;
+	}
+
+	public void setTextFieldRequired(boolean textFieldRequired) {
+		this.textFieldRequired = textFieldRequired;
+	}
+
+	public void setNumFieldInput(Integer numFieldInput) {
+		this.numFieldInput = numFieldInput;
+	}
+
 	public boolean isLocationRestricted() {
 		return isLocationRestricted;
 	}
@@ -203,7 +225,7 @@ public class Message implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public int getNumFieldInput() {
+	public Integer getNumFieldInput() {
 		return numFieldInput;
 	}
 	public void setNumFieldInput(int numFieldInput) {
