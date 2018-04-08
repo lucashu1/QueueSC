@@ -7,6 +7,8 @@ import java.util.Vector;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
 
 import queues.Queue;
@@ -24,7 +26,7 @@ public class DBInterface {
 	
 	private Dao<User, String> userDao; // <class to be persisted, type of primary key>
 	private Dao<Queue, String> queueDao;
-	private Dao<QueueEntry, Integer> queueEntryDao; // assume queueEntry has auto-generated 
+	private Dao<QueueEntry, Integer> queueEntryDao; // assume queueEntry has auto-generated id
 
 	
 	public DBInterface() {
@@ -64,14 +66,40 @@ public class DBInterface {
 		return true;
 	}
 	
-	public boolean addUserToQueue(User u, Queue q) {
+	public User getUserFromDB(String userEmail) {
+		try {
+			User allegedUser = userDao.queryForId(userEmail);
+		} catch (SQLException se) {
+			System.out.println("Problem reading from db");
+		}
+
+	}
+	
+	public Queue getQueueFromDB() {
+		
+	}
+	
+	public boolean addQueueEntryToDB(QueueEntry qe) {
 		// Returns true if the user was succesfully added
 		
 	}
 	
-	public boolean isUserInQueue(User u, Queue q) {
+	public boolean isUserInQueue(String userEmail, String qCode) {
 		// Returns true if the user is in the queue in the DB
 		
+		// Get the user object
+		User allegedUser = getUserFromDB()
+		QueryBuilder<QueueEntry, Integer> queryBuilder =queueEntryDao.queryBuilder();
+		// get the WHERE object to build our query
+		Where<QueueEntry, Integer> where = queryBuilder.where();
+		// the name field must be equal to "foo"
+		where.eq(QueueEntry.u, userEmail);
+		// and
+		where.and();
+		// the password field must be equal to "_secret"
+		where.eq(, "_secret");
+		PreparedQuery<Account> preparedQuery = queryBuilder.prepare();
+
 	}
 	
 	public Vector<User> getUsersInQueue(String qCode) {
@@ -125,6 +153,7 @@ public class DBInterface {
 	
 	public boolean deleteQueue(String qCode) {
 		// Returns true if the queue was deleted successfully
+		
 	}
 	
 	public boolean deleteUser(String email) {
@@ -135,4 +164,16 @@ public class DBInterface {
 		if ()
 	}
 	
+	
+	public int getPositionInQueue (String email, String qCode) {
+		if (isUserInQueue(email, qCode)) {
+			
+		} else {
+			return -1;
+		}
+	}
+	
+	public void advanceQueue (String qCode) {
+		
+	}
 }
