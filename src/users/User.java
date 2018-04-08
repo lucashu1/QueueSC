@@ -7,15 +7,21 @@ import javax.xml.bind.DatatypeConverter;
 
 import queues.Queue;
 
-abstract public class User {
+public class User {
 	//Member Variables 
-	private int id;
-	private String firstName;
-	private String lastName;
-	private String email;
-	private ArrayList<Queue> enteredQueues;
-	private ArrayList<Queue> managedQueues;
+	public int id;
+	public String firstName;
+	public String lastName;
+	public String email;
+	public ArrayList<Queue> enteredQueues;
+	public ArrayList<Queue> managedQueues;
+	public String passwordHash;
+	
 	//Constructor
+	public User() {
+		
+	}
+	
 	public User(String fn, String ln, String e)
 	{
 		firstName=fn;
@@ -33,6 +39,38 @@ abstract public class User {
 	{
 		
 	}
+	
+	public String getPasswordHash() {
+		return passwordHash;
+	}
+
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
+	}
+	
+	public boolean isPasswordValid(String pwd)
+	{
+		String hashedInput = hashPassword(pwd);
+		if (hashedInput.equals(passwordHash)) {
+			return true;
+		}
+		return false;
+	}
+	
+	public String hashPassword(String password) {
+		String myHash = "";
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(password.getBytes());
+			byte[] digest = md.digest();
+			myHash = DatatypeConverter.printHexBinary(digest).toUpperCase();
+			return myHash;
+		} catch (NoSuchAlgorithmException e) {
+			System.out.println("Error in hashPassword: " + e.getMessage());
+			return myHash;
+		}	
+	}
+	
 	public int getId() {
 		return id;
 	}
