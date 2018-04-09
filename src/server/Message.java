@@ -14,7 +14,7 @@ import java.util.Vector;
 		// Response: success/failure (qCodeInvalid)
 	// enqueue
 		// Request: qCode, email, numFieldInput, textFieldInput, (latitude, longitude)
-		// Response: success/failure (qCodeInvalid, emailInvalid, missingFormInput, userOutOfRange, queueAlreadyFull)
+		// Response: success/failure (qCodeInvalid, emailInvalid, missingFormInput, userOutOfRange, queueAlreadyFull, userAlreadyInQueue)
 	// dequeue
 		// Request: qCode
 		// Response: success/failure (qCodeInvalid)

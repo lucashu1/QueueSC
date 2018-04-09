@@ -93,5 +93,8 @@ public class QueueEntry {
 		this.queue = q;
 	}
 	
+	public int getPosition() {
+		return position;
+	}
 	
 }

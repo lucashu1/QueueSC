@@ -89,7 +89,8 @@ public class QueueSCServer {
 		String qCode = m.getqCode();
 		String name = m.getQueueName();
 		String description = m.getQueueDescription();
-		String owner = m.getEmail();
+		String ownerEmail = m.getEmail();
+		User owner = dbInterface.getUserFromDB(ownerEmail);
 		boolean numFieldRequired = m.isNumFieldRequired();
 		boolean textFieldRequired = m.isTextFieldRequired();
 		boolean isLocationRestricted = m.isLocationRestricted();
@@ -166,6 +167,15 @@ public class QueueSCServer {
 			Message response = new Message("enqueueResponse");
 			response.setResponseStatus("queueAlreadyFull");
 			sendMessage(response, s);
+			return;
+		}
+		
+		// Check if user is already in queue
+		if (dbInterface.getQueueEntryFromDB(qCode, email) != null) {
+			Message response = new Message("enqueueResponse");
+			response.setResponseStatus("userAlreadyInQueue");
+			sendMessage(response, s);
+			return;
 		}
 		
 		// Check for valid numerical input (if necessary)
@@ -334,7 +344,7 @@ public class QueueSCServer {
 		}
 		
 		User u = new User(firstName, lastName, email);
-		u.isGuest = true;
+		u.setIsGuest(true); // TODO: use setter
 		
 		// Add guest user to DB
 		dbInterface.addUsertoDB(u);
@@ -360,7 +370,7 @@ public class QueueSCServer {
 		response.setqCode(qCode);
 		response.setQueueName(q.getName());
 		response.setQueueDescription(q.getDescription());
-		response.setEmail(q.getOwner());
+		response.setEmail(q.getOwner().getEmail());
 		response.setNumFieldRequired(q.isNumFieldRequired());
 		response.setTextFieldRequired(q.isTextFieldRequired());
 		response.setNumFieldDescription(q.getNumFieldDescription());
@@ -390,9 +400,36 @@ public class QueueSCServer {
 		response.setEmail(email);
 		response.setFirstName(u.getFirstName());
 		response.setLastName(u.getLastName());
-		// Queues entered (qCodes)
-		// Queues entered positions
-		// Queues managing (qCodes)
+		
+		// Get info about what queues the user is in/managing
+		Vector<QueueEntry> userQueueEntries = dbInterface.getQueueEntriesForUser(email);
+		Vector<Queue> userManagedQueues = dbInterface.getQueuesManagedByUser(email);
+		
+		Vector<String> queuesEnteredNames = new Vector<String>();
+		Vector<String> queuesEnteredCodes = new Vector<String>();
+		Vector<Integer> queuesEnteredPositions = new Vector<Integer>();
+		Vector<String> queuesManagingNames = new Vector<String>();
+		Vector<String> queuesManagingCodes = new Vector<String>();
+		
+		for (QueueEntry qe : userQueueEntries) {
+			queuesEnteredNames.add(qe.getQueue().getName());
+			queuesEnteredCodes.add(qe.getQueue().getqCode());
+			queuesEnteredPositions.add(qe.getPosition());
+		}
+		
+		for (Queue q : userManagedQueues) {
+			queuesManagingNames.add(q.getName());
+			queuesManagingCodes.add(q.getqCode());
+		}
+		
+		response.setQueuesEnteredCodes(queuesEnteredCodes);
+		response.setQueuesEnteredNames(queuesEnteredNames);
+		response.setQueuesEnteredPositions(queuesEnteredPositions);
+		response.setQueuesManagingCodes(queuesManagingCodes);
+		response.setQueuesManagingNames(queuesManagingNames);
+		
+		response.setResponseStatus("success");
+		sendMessage(response, s);
 	}
 	
 	// OTHER
