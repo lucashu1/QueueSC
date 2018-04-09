@@ -36,7 +36,7 @@ public class Queue {
 	private String name;
     @DatabaseField
 	private String description;
-    @DatabaseField
+    @DatabaseField(foreign = true)
 	private User owner; // email of the queue creator
     @DatabaseField
 	private String numFieldDescription;

@@ -204,12 +204,17 @@ public class DBInterface {
 	////////////////////////////////////////////
 	public boolean incrementNumUsersProcessed(String qCode) {
 	 	
+		// Build the update query
 		UpdateBuilder<Queue, String> updateBuilder = queueDao.updateBuilder();
+		Where<Queue, String>
 		// update the password to be "none"
 		updateBuilder.updateColumnValue("password", "none");
 		// only update the rows where password is null
 		updateBuilder.where().eq(Queue.qCode, qCode);
-		updateBuilder.update();
+		
+		
+		
+		queueDao.update(arg0)
 	}
 
 	
@@ -274,6 +279,14 @@ public class DBInterface {
 		}
 	}
 	
+	
+	public Vector<QueueEntry> getQueueEntriesForUser(String email) {
+		
+	}
+	
+	public Vector<Queue> getQueuesManagedByUser(String email) {
+		
+	}
 
 	/////////////////////////////
 	/////// Delete models ///////

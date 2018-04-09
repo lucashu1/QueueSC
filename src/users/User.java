@@ -59,14 +59,7 @@ public class User {
 		
 	}
 	
-	public String getPasswordHash() {
-		return passwordHash;
-	}
 
-	public void setPasswordHash(String passwordHash) {
-		this.passwordHash = passwordHash;
-	}
-	
 	public boolean isPasswordValid(String pwd)
 	{
 		String hashedInput = hashPassword(pwd);
@@ -113,4 +106,22 @@ public class User {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+	
+	public String getPasswordHash() {
+		return passwordHash;
+	}
+
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
+	}
+	
+	public boolean isGuest() {
+		return isGuest;
+	}
+
+	public void setIsGuest(boolean isGuest) {
+		this.isGuest = isGuest;
+	}
+	
+	
 }
