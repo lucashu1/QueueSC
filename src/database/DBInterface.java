@@ -103,7 +103,7 @@ public class DBInterface {
 	
 	public boolean addQueueEntryToDB(QueueEntry qe) {
 		// Returns true if the the queue object was successfully added to DB
-		if (getQueueEntryFromDB(qe.getQ().getqCode(), qe.getUser().getEmail()) == null) {
+		if (getQueueEntryFromDB(qe.getQueue().getqCode(), qe.getUser().getEmail()) == null) {
 			return false;
 		}
 		try {
@@ -156,11 +156,11 @@ public class DBInterface {
 		QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
 		Where<QueueEntry, Integer> where = queryBuilder.where();
 		// the user in the entry must be the one we are looking for
-		where.eq(QueueEntry.u, allegedUser);
+		where.eq(QueueEntry.USER_FIELD_NAME, allegedUser);
 		// and
 		where.and();
 		// it must be the correct queue
-		where.eq(QueueEntry.q, allegedQueue);
+		where.eq(QueueEntry.QUEUE_FIELD_NAME, allegedQueue);
 		PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();
 		
 		// Run the query and return the result if appropriate
@@ -183,11 +183,11 @@ public class DBInterface {
 		QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
 		Where<QueueEntry, Integer> where = queryBuilder.where();
 		// the queueEntry must be in the correct queue
-		where.eq(QueueEntry.q, allegedQueue);
+		where.eq(QueueEntry.QUEUE_FIELD_NAME, allegedQueue);
 		// and
 		where.and();
 		// the queueEntry must be the first in that queue
-		where.eq(QueueEntry.position, 1);
+		where.eq(QueueEntry.POSITION_FIELD_NAME, 1);
 		PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();
 		
 		// Run the query and return the result if appropriate
@@ -203,7 +203,7 @@ public class DBInterface {
 	//////// Update Existing rows in DB ////////
 	////////////////////////////////////////////
 	public boolean incrementNumUsersProcessed(String qCode) {
-	 	
+	 	// WIP
 		// Build the update query
 		UpdateBuilder<Queue, String> updateBuilder = queueDao.updateBuilder();
 		Where<Queue, String>
@@ -267,7 +267,7 @@ public class DBInterface {
 		QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
 		Where<QueueEntry, Integer> where = queryBuilder.where();
 		// it must be the correct queue
-		where.eq(QueueEntry.q, q);
+		where.eq(QueueEntry.QUEUE_FIELD_NAME, q);
 		PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();		
 		
 		// Run the query and return the result if appropriate
@@ -302,7 +302,7 @@ public class DBInterface {
 		
 	}
 	
-	public boolean deleteQueueEntryFromDB(String) {
+	public boolean deleteQueueEntryFromDB(String qCode, String email) {
 		
 	}
 	
