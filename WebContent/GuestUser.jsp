@@ -37,7 +37,7 @@ function connectToServer()
 		if(message.responseStatus=="success")
 			{
 			alert("success");
-			window.location = "/JoinQueue.html?qCode="+createGuestUser.qCode;
+			window.location = "JoinQueue.html?qCode="+createGuestUser.qCode;
 			}
 		
 	}
