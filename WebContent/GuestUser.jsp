@@ -5,9 +5,10 @@
 <script>
 var socket;
 socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
+var createGuestUser= {type: "guestLogInRequest",email: "", firstName:"", lastName: "", qCode:"" };
 function onSubmit()
 {
-	var createGuestUser= {type: "guestLogIn",email: "", firstName:"", lastName: "", qCode:"" };
+	
 	createGuestUser.email=document.getElementById("email").value;
 	createGuestUser.firstName=document.getElementById("firstName").value;
 	createGuestUser.lastName=document.getElementById("lastName").value;
@@ -21,19 +22,22 @@ function onSubmit()
 function connectToServer()
 {
 	
-	socket.onopen=alert("connected");
 	socket.onmessage=function(event)
 	{
 		var message=JSON.parse(event.data);
-		document.getElementById("done").innerHTML=message.responseText="responseRecieved";
 		alert(message.responseStatus);
-		if(message.responseStatus=="email taken")
+		if(message.responseStatus=="emailTaken")
 			{
 			document.getElementById("emailError").innerHTML=message.responseStatus;
 			}
-		if(message.responseStatus=="queue code")
+		if(message.responseStatus=="qCodeInvalid")
 			{
 			document.getElementById("Invalid Queue Code").innerHTML=message.responseResponse;
+			}
+		if(message.responseStatus=="success")
+			{
+			alert("success");
+			window.location = "/JoinQueue.html?qCode="+createGuestUser.qCode;
 			}
 		
 	}
@@ -48,7 +52,6 @@ function connectToServer()
 </head>
 <body onload="connectToServer()">
 <form name="guestUserForm"  onsubmit="onSubmit(); return false;">
-<div id=done></div>
 <div id=emailError></div>
 Email: <br><input type="email" name="email" id="email" required><br>
 First Name: <br><input type="text" name="firstName" id="firstName" required><br>
