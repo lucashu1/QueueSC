@@ -24,6 +24,94 @@
 
 <link rel="stylesheet" href="GeneralStyle.css">
 
+<script>
+var socket;
+var userDashboardRequest={type:"pullUserInfoRequest", email:""}
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) 
+        {
+            return sParameterName[1];
+        }
+    }
+}
+
+
+function connectToServer()
+{
+
+	socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
+	socket.onopen=function ()
+	{
+		
+		userDashboardRequest.email=GetURLParameter("email");
+		socket.send(JSON.stringify(userDashboardRequest));
+	}
+	socket.onmessage=function(event)
+	{
+		var userDashboardResponse=JSON.parse(event.data);
+		if(userDashboardResponse.responseStatus=="emailInvalid")
+			{
+			alert("Invalid Email. Could not fetch data");
+			}
+		else
+			{
+			/* Profile Info */
+			document.getElementById("userName").innerHTML=userDashboardResponse.firstName+" "+userDashboardResponse.lastName;
+			document.getElementById("email").innerHTML=userDashboardRequest.email;
+			/*Creating divs for queus they are in*/
+			var queuesJoined="";
+			
+			for(var i=0; i<userDashboardResponse.queuesEnteredNames.length; i++)
+				{
+				var q="";
+				q="<div class=\"card\" style=\"width: 18rem;\">"+
+				"<div class=\"card-body\">"+
+				"<h5 class=\"card-title\">"+
+				userDashboardResponse.queuesEnteredNames[i]+
+				"</h5>"+
+				"<h6 class=\"card-subtitle mb-2 text-muted\">"+userDashboardResponse.queuesEnteredPositions[i]+"</h6>"+
+				"<a href=\"http://localhost:8080/QueueSC/QueueInfo.html?queueCode="+userDashboardResponse.queuesEnteredCodes[i]+"\" class=\"card-link\">Queue link</a>"+
+				"</div>"+
+				"</div>"+
+				"<br><br>";
+				queuesJoined+=q;
+				}
+			console.log(queuesJoined);
+			document.getElementById("updateQueuesEntered").innerHTML=queuesJoined;
+			/*Creating divs for queues they are managing*/
+			var queuesManaging="";
+			for(var j=0; j<userDashboardResponse.queuesManagingNames.length; j++)
+				{
+				var m;
+				m="<div class=\"card\" style=\"width: 18rem;\">"+
+				"<div class=\"card-body\">"+
+					"<h5 class=\"card-title\">"+userDashboardResponse.queuesManagingNames[j]+"</h5>"+
+					"<a href=\"http://localhost:8080/QueueSC/QueueInfo.html?queueCode="+userDashboardResponse.queuesManagingCodes[j]+"class=\"card-link\">Queue link</a>"+
+				"</div>"+
+				"</div>"+
+				"<br><br>";
+				queuesManaging+=m;
+				
+				}
+			console.log(queuesManaging);
+			document.getElementById("updateQueuesManaging").innerHTML=queuesManaging;
+			}
+		
+	}
+	 
+	
+}
+
+window.onload= connectToServer;
+</script>
+
+
 </head>
 <body>
 	<div id="navbar" class="topnav">
@@ -33,11 +121,12 @@
 	<div class="container" style=" padding-top: 20px;">
 		<div class="row justify-content-between">
 			<div class="col-4">
-				<h1>Username</h1>
-				<h4>Email</h4>
+				<h1 id="userName">Username</h1>
+				<h4 id="email">Email</h4>
 			</div>
 			<div class="col-4">
 				<h1>Queues Entered</h1>
+				<div id="updateQueuesEntered"></div>
 				<div class="card" style="width: 18rem;">
 					<div class="card-body">
 						<h5 class="card-title">Queue 1</h5>
@@ -46,6 +135,7 @@
 					</div>
 				</div>
 				<br><br>
+				
 				<div class="card" style="width: 18rem;">
 					<div class="card-body">
 						<h5 class="card-title">Queue 1</h5>
@@ -56,6 +146,7 @@
 			</div>
 			<div class="col-4">
 				<h1>Queues Managing</h1>
+				<div id="updateQueuesManaging"></div>
 				<div class="card" style="width: 18rem;">
 					<div class="card-body">
 						<h5 class="card-title">Queue 1</h5>
