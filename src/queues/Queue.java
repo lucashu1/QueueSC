@@ -53,7 +53,7 @@ public class Queue {
     @DatabaseField
 	private int maxSize;
     @DatabaseField
-	private int avgWaitTime; // in seconds
+	private int avgWaitTime = 0; // in seconds
     @DatabaseField
 	private int numUsersProcessed;
     @DatabaseField
