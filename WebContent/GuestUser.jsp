@@ -30,7 +30,7 @@
 				document.getElementById("emailError").innerHTML = message.responseStatus;
 			}
 			if (message.responseStatus == "qCodeInvalid") {
-				document.getElementById("Invalid Queue Code").innerHTML = message.responseResponse;
+				document.getElementById("queueCodeError").innerHTML = message.responseResponse;
 			}
 			if (message.responseStatus == "success") {
 				alert("success");
