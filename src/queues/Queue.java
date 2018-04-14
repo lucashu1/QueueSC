@@ -53,7 +53,7 @@ public class Queue {
     @DatabaseField
 	private int maxSize;
     @DatabaseField
-	private double avgWaitTime;
+	private int avgWaitTime; // in seconds
     @DatabaseField
 	private int numUsersProcessed;
     @DatabaseField
@@ -191,11 +191,11 @@ public class Queue {
 		this.maxSize = maxSize;
 	}
 
-	public double getAvgWaitTime() {
+	public int getAvgWaitTime() {
 		return avgWaitTime;
 	}
 
-	public void setAvgWaitTime(double avgWaitTime) {
+	public void setAvgWaitTime(int avgWaitTime) {
 		this.avgWaitTime = avgWaitTime;
 	}
 
