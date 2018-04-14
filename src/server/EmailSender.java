@@ -17,6 +17,7 @@ public class EmailSender extends Thread {
 
 	private String recipientEmail;
 	private String queueName;
+	private Session session;
 
 	public EmailSender(String email, String queueName) {
 		properties.put("mail.smtp.auth", "true");
@@ -26,15 +27,16 @@ public class EmailSender extends Thread {
 
 		this.recipientEmail = email;
 		this.queueName = queueName;
-	}
-
-	public void run() {
+		
 		// Get the default Session object.
-		Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+		session = Session.getInstance(properties, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(USERNAME, PASSWORD);
 			}
 		});
+	}
+
+	public void run() {
 
 		try {
 			// Create a default MimeMessage object.
@@ -58,5 +60,11 @@ public class EmailSender extends Thread {
 		} catch (MessagingException mex) {
 			mex.printStackTrace();
 		}
+	}
+	
+	public static void main(String [] args) {
+		// Testing email functionality...
+		EmailSender testEmail = new EmailSender("lucashu1998@gmail.com", "Test Queue");
+		testEmail.start();
 	}
 }
