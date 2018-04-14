@@ -17,6 +17,7 @@ public class QueueEntry {
     public static final String NUMFIELDINPUT_FIELD_NAME = "numFieldInput";
     public static final String USER_FIELD_NAME = "user";
     public static final String QUEUE_FIELD_NAME = "queue";
+    public static final String QCODE_FIELD_NAME = "qcode";
     public static final String POSITION_FIELD_NAME = "position";
 
     
@@ -34,12 +35,15 @@ public class QueueEntry {
     @DatabaseField(foreign = true)
 	private Queue queue;
     @DatabaseField
+    private String qCode;
+    @DatabaseField
 	private int position;
 	
 	// QueueEntry constructor
 	public QueueEntry(User u, Queue q, String textFieldInput, int numFieldInput) {
 		this.user = u;
 		this.queue = q;
+		this.qCode = q.getqCode();
 		this.textFieldInput = textFieldInput;
 		this.numFieldInput = numFieldInput;
 		timeOfEntry = new Date(); // Track current date/time
@@ -96,5 +100,18 @@ public class QueueEntry {
 	public int getPosition() {
 		return position;
 	}
+	
+	public void setPosition(int pos) {
+		this.position = pos;
+	}
+	
+	public String getqCode() {
+		return qCode;
+	}
+
+	public void setqCode(String qCode) {
+		this.qCode = qCode;
+	}
+	
 	
 }

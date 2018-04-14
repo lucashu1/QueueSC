@@ -8,6 +8,7 @@ import java.util.Vector;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
@@ -20,10 +21,10 @@ import users.User;
 
 public class DBInterface {
 	
-	private static String baseDbURL = "jdbc:postgresql://queuescdb.canjkvgt5lzz.us-east-1.rds.amazonaws.com:5432/";
-	private static String dbName = "mainDB";
-	private static String dbUser = "QueueSCAdmin";
-	private static String dbPassword = "bluesky4238";
+	private static final String baseDbURL = "jdbc:postgresql://queuescdb.canjkvgt5lzz.us-east-1.rds.amazonaws.com:5432/";
+	private static final String dbName = "mainDB";
+	private static final String dbUser = "QueueSCAdmin";
+	private static final String dbPassword = "bluesky4238";
 	
 	private JdbcPooledConnectionSource connectionSource = null;
 	
@@ -153,23 +154,30 @@ public class DBInterface {
 		}
 		
 		// Build the query
-		QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
-		Where<QueueEntry, Integer> where = queryBuilder.where();
-		// the user in the entry must be the one we are looking for
-		where.eq(QueueEntry.USER_FIELD_NAME, allegedUser);
-		// and
-		where.and();
-		// it must be the correct queue
-		where.eq(QueueEntry.QUEUE_FIELD_NAME, allegedQueue);
-		PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();
-		
-		// Run the query and return the result if appropriate
-		List<QueueEntry> results = queueEntryDao.query(preparedQuery);
-		if (results.size() != 1) {
-			return (QueueEntry) null;
-		} else {
-			return results.get(0);
+		try {
+			QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
+			Where<QueueEntry, Integer> where = queryBuilder.where();
+			// the user in the entry must be the one we are looking for
+			where.eq(QueueEntry.USER_FIELD_NAME, allegedUser);
+			// and
+			where.and();
+			// it must be the correct queue
+			where.eq(QueueEntry.QUEUE_FIELD_NAME, allegedQueue);
+			PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();
+			
+			// Run the query and return the result if appropriate
+			List<QueueEntry> results = queueEntryDao.query(preparedQuery);
+			if (results.size() != 1) {
+				return (QueueEntry) null;
+			} else {
+				return results.get(0);
+			}
 		}
+		catch (SQLException se) {
+			System.out.println("Problem reading from database");
+			return (QueueEntry) null; 
+		}
+
 	}
 	
 	public QueueEntry getQueueEntryFromDBByPosition(String qCode, int position) {
@@ -180,41 +188,58 @@ public class DBInterface {
 		}
 		
 		// Build the query
-		QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
-		Where<QueueEntry, Integer> where = queryBuilder.where();
-		// the queueEntry must be in the correct queue
-		where.eq(QueueEntry.QUEUE_FIELD_NAME, allegedQueue);
-		// and
-		where.and();
-		// the queueEntry must be the first in that queue
-		where.eq(QueueEntry.POSITION_FIELD_NAME, 1);
-		PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();
-		
-		// Run the query and return the result if appropriate
-		List<QueueEntry> results = queueEntryDao.query(preparedQuery);
-		if (results.size() != 1) {
-			return (QueueEntry) null;
-		} else {
-			return results.get(0);
+		try {
+			QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
+			Where<QueueEntry, Integer> where = queryBuilder.where();
+			// the queueEntry must be in the correct queue
+			where.eq(QueueEntry.QUEUE_FIELD_NAME, allegedQueue);
+			// and
+			where.and();
+			// the queueEntry must be the first in that queue
+			where.eq(QueueEntry.POSITION_FIELD_NAME, 1);
+			PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();
+			
+			// Run the query and return the result if appropriate
+			List<QueueEntry> results = queueEntryDao.query(preparedQuery);
+			if (results.size() != 1) {
+				return (QueueEntry) null;
+			} else {
+				return results.get(0);
+			}
+		} catch (SQLException se) {
+			System.out.println("Problem reading from database");
+			return (QueueEntry) null; 		
 		}
+
 	}
 	
 	////////////////////////////////////////////
 	//////// Update Existing rows in DB ////////
 	////////////////////////////////////////////
 	public boolean incrementNumUsersProcessed(String qCode) {
-	 	// WIP
-		// Build the update query
-		UpdateBuilder<Queue, String> updateBuilder = queueDao.updateBuilder();
-		Where<Queue, String>
-		// update the password to be "none"
-		updateBuilder.updateColumnValue("password", "none");
-		// only update the rows where password is null
-		updateBuilder.where().eq(Queue.qCode, qCode);
-		
-		
-		
-		queueDao.update(arg0)
+		// Get the current value of the "numUsersProcessed" field
+		Queue thisQueue = getQueueFromDB(qCode);
+		if (thisQueue == null) {
+			return false;
+		}
+		int curVal = thisQueue.getNumUsersProcessed();
+
+		try {
+			// Build the update query
+			UpdateBuilder<Queue, String> updateBuilder = queueDao.updateBuilder();
+			// Only get the queue 
+			updateBuilder.where().eq(Queue.QCODE_FIELD_NAME, qCode);
+			// Increment the field
+			updateBuilder.updateColumnValue(Queue.NUMUSERSPROCESSED_FIELD_NAME, curVal + 1);
+
+			// Run the query
+			updateBuilder.update();
+			return true;
+		}
+		catch (SQLException se) {
+			System.out.println("There was a problem with the database.");
+			return false;
+		}		
 	}
 
 	
@@ -240,7 +265,7 @@ public class DBInterface {
 	public QueueEntry advanceQueue (String qCode) {
 		// returns the queueEntry that will be popped from the queue
 		QueueEntry topOfQueue = getQueueEntryFromDBByPosition(qCode, 1);
-		deleteQueueEntryFromDB()
+		deleteQueueEntryFromDB(topOfQueue.getQueue().getqCode(), topOfQueue.getUser().getEmail());
 		
 		// Update the average waiting time
 		
@@ -294,16 +319,43 @@ public class DBInterface {
 	// TODO:
 
 	public boolean deleteUserFromDB(String email) {
-		userDao.deleteById(email);	
+		try {
+			userDao.deleteById(email);	
+			return true;
+		}
+		catch (SQLException se) {
+			return false;
+		}
 	}
 
 	public boolean deleteQueueFromDB(String qCode) {
 		// Returns true if the queue was deleted successfully
-		
+		try {
+			queueDao.deleteById(qCode);	
+			return true;
+		}
+		catch (SQLException se) {
+			return false;
+		}
 	}
 	
 	public boolean deleteQueueEntryFromDB(String qCode, String email) {
-		
+		try {
+			// Build the update query
+			DeleteBuilder<QueueEntry, Integer> deleteBuilder = queueEntryDao.deleteBuilder();
+			// Only get the right entry
+			deleteBuilder.where().eq(Queue.QCODE_FIELD_NAME, qCode);
+			// Increment the field
+			updateBuilder.updateColumnValue(Queue.NUMUSERSPROCESSED_FIELD_NAME, curVal + 1);
+
+			// Run the query
+			updateBuilder.update();
+			return true;
+		}
+		catch (SQLException se) {
+			System.out.println("There was a problem with the database.");
+			return false;
+		}		
 	}
 	
 
