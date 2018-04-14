@@ -22,7 +22,7 @@ public class QueueEntry {
 
     
 	// Member variables
-    @DatabaseField(id = true, generatedId = true)
+    @DatabaseField(generatedId = true)
 	private int entryID;
     @DatabaseField
 	private Date timeOfEntry;
