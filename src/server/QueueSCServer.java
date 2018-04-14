@@ -226,6 +226,14 @@ public class QueueSCServer {
 		
 		// Success!
 		QueueEntry qe = dbInterface.advanceQueue(qCode);
+		String queueName = qe.getQueue().getName();
+		String email = qe.getUser().getEmail();
+		
+		// Send email notification to user
+		EmailSender es = new EmailSender(email, queueName);
+		es.start();
+		
+		// Send response to client
 		Message resp = new Message("dequeueResponse");
 		resp.setResponseStatus("success");
 		sendMessage(resp, s);
@@ -402,8 +410,8 @@ public class QueueSCServer {
 		response.setLastName(u.getLastName());
 		
 		// Get info about what queues the user is in/managing
-		Vector<QueueEntry> userQueueEntries = dbInterface.getQueueEntriesForUser(email);
-		Vector<Queue> userManagedQueues = dbInterface.getQueuesManagedByUser(email);
+		Vector<QueueEntry> userQueueEntries = new Vector<QueueEntry>(dbInterface.getQueueEntriesForUser(email));
+		Vector<Queue> userManagedQueues = new Vector<Queue>(dbInterface.getQueuesManagedByUser(email));
 		
 		Vector<String> queuesEnteredNames = new Vector<String>();
 		Vector<String> queuesEnteredCodes = new Vector<String>();
@@ -444,5 +452,5 @@ public class QueueSCServer {
 			sendMessage(m, s);
 		}
 	}
-	
 }
+
