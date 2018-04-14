@@ -107,16 +107,6 @@ public class Queue {
 	      return false;
 	}
 	
-	// Return true if queue contains a user with the given email
-	public boolean hasUser(String email) {
-		for (QueueEntry qe : queueEntries) {
-			if (qe.getUser().getEmail().equals(email)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public String getqCode() {
 		return qCode;
 	}
@@ -203,14 +193,6 @@ public class Queue {
 
 	public void setNumUsersProcessed(int numUsersProcessed) {
 		this.numUsersProcessed = numUsersProcessed;
-	}
-
-	public Vector<QueueEntry> getQueueEntries() {
-		return queueEntries;
-	}
-
-	public void setQueueEntries(Vector<QueueEntry> queueEntries) {
-		this.queueEntries = queueEntries;
 	}
 
 	public double getLongitude() {
