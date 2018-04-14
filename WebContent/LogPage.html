@@ -1,64 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Login</title>
-	
-	<!-- begin boostrap import -->
-	<link rel="stylesheet"
-		href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-		crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-		crossorigin="anonymous"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-		crossorigin="anonymous"></script>
-	<script
-		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-		crossorigin="anonymous"></script>
-	<!-- end boostrap import -->
-	
-	
-	<link rel="stylesheet" href="GeneralStyle.css">
-	<script>
-var socket;
-socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
-var userLogin= {type: "userLoginRequest",email: "", password:""};
-function onSubmit()
-{
-	userLogin.email=document.getElementById("InputEmail").value;
-	userLogin.password=document.getElementById("InputPassword").value;
-	socket.send(JSON.stringify(userLogin));
+<meta charset="UTF-8">
+<title>Login</title>
 
-}
+<!-- begin boostrap import -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	crossorigin="anonymous"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	crossorigin="anonymous"></script>
+<!-- end boostrap import -->
 
-function connectToServer()
-{
-	
-	socket.onmessage=function(event)
+
+<link rel="stylesheet" href="GeneralStyle.css">
+<script>
+	var socket;
+	socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
+	var userLogin= {type: "userLoginRequest",email: "", password:""};
+	function onSubmit()
 	{
-		var message=JSON.parse(event.data);
-		if(message.responseStatus=="emailDoesNotExist")
-			{
-			document.getElementById("emailDoesNotExist").innerHTML=message.responseStatus;
-			}
-		if(message.responseStatus=="incorrectPassword")
-			{
-			document.getElementById("incorrectPassword").innerHTML=message.responseResponse;
-			}
-		if(message.responseStatus=="success")
-			{
-			window.location="HomeDashboard.html?email="+userLogin.email;
-			}
+		userLogin.email=document.getElementById("InputEmail").value;
+		userLogin.password=document.getElementById("InputPassword").value;
+		socket.send(JSON.stringify(userLogin));
+	}
+	
+	function connectToServer()
+	{
+		
+		socket.onmessage=function(event)
+		{
+			var message=JSON.parse(event.data);
+			if(message.responseStatus=="emailDoesNotExist")
+				{
+				document.getElementById("emailDoesNotExist").innerHTML=message.responseStatus;
+				}
+			if(message.responseStatus=="incorrectPassword")
+				{
+				document.getElementById("incorrectPassword").innerHTML=message.responseResponse;
+				}
+			if(message.responseStatus=="success")
+				{
+				window.location="HomeDashboard.html?email="+userLogin.email;
+				}
+		}
+		 
 		
 	}
-	 
-	
-}
 
 
 
@@ -72,18 +70,20 @@ function connectToServer()
 
 	<div class="container vertical-center input-form-wrapper">
 		<form class="general-form-style" onsubmit="onSubmit(); return false;">
+		
 			<div class="form-group">
-				<label for="InputEmail">Email address</label> <input
-					type="email" class="form-control" id="InputEmail"
-					aria-describedby="emailHelp" placeholder="Enter email"> 
+				<label for="InputEmail">Email address</label>
+				<input type="email" class="form-control" id="InputEmail" placeholder="Enter email">
+				<div id="emailDoesNotExist"></div>
 			</div>
-			<div id="emailDoesNotExist"></div>
+			
+			
 			<div class="form-group">
-				<label for="InputPassword">Password</label> <input
-					type="password" class="form-control" id="InputPassword"
-					placeholder="Password">
+				<label for="InputPassword">Password</label>
+				<input type="password" class="form-control" id="InputPassword" placeholder="Password">
+				<div id="incorrectPassword"></div>
 			</div>
-			<div id="incorrectPassword"></div>
+			
 			<button type="submit" class="btn btn-primary">Login</button>
 		</form>
 	</div>
