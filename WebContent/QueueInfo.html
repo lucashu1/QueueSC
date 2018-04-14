@@ -4,7 +4,84 @@
 <meta charset="ISO-8859-1">
 <title>Insert title here</title>
 </head>
-<body>
+<script>
+var userQueueRequest={type:"pullUserInfoRequest", email:"", queueCode:""}
+var queueIndex;
+var socket;
 
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) 
+        {
+            return sParameterName[1];
+        }
+    }
+} 
+
+function leaveQueue()
+{
+	var leaveQueueRequest={type:"removeUserRequest", email:userQueueRequest.email, queueCode: userQueueRequest.queueCode};
+	socket.send(JSON.stringify(leaveQueueRequest));
+	
+	
+} 
+
+function connectToServer()
+{
+	socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
+	socket.onopen=function ()
+	{
+		
+		userQueueRequest.email=GetURLParameter("email");
+		userQueueRequest.queueCode=GetURLParameter("queueCode");
+		socket.send(JSON.stringify(userQueueRequest));
+	}
+	socket.onmessage=function(event)
+	{
+		var userQueueResponse=JSON.parse(event.data);
+		if(userQueueResponse.type=="removeUserResponse")
+			{
+			if(userQueueResponse.responseStatus=="success")
+				{
+				alert("Successfully removed");
+				window.location="HomeDashboard.html?email="+userQueueRequest.email;
+				
+				}
+			}
+		else 
+			{
+			if(userQueueResponse.responseStatus=="emailInvalid")
+			{
+			alert("Invalid Email. Could not fetch data");
+			}
+			else
+			{
+				
+				queueIndex=  userQueueResponse.queuesEnteredCodes.indexOf(userQueueRequest.queueCode); 
+				document.getElementById("queueName").innerHTML= "Name: "+ userQueueResponse.queuesEnteredNames[queueIndex];
+				document.getElementById("queuePosition").innerHTML= "Position:" + userQueueResponse.queuesEnteredPositions[queueIndex];
+				document.getElementById("averageWaitTime").innerHTML="Wait Time: " +userQueueResponse.avgWaitTime;
+			}
+			}
+		
+	}
+	 
+	
+}
+
+window.onload = connectToServer;
+//document.getElementById("leaveQueue").addEventListener("click", leaveQueue);
+</script>
+
+<body>
+<div id="queueName">Test</div>
+<div id="queuePosition">Test</div>
+<div id="averageWaitTime">Test</div>
+<input type="button" id="leaveQueue" value="Leave Queue" onclick="leaveQueue()"></input>
 </body>
 </html>
