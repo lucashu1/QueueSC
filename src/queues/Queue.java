@@ -57,8 +57,6 @@ public class Queue {
     @DatabaseField
 	private int numUsersProcessed;
     @DatabaseField
-	private Vector<QueueEntry> queueEntries;
-    @DatabaseField
 	private double longitude;
     @DatabaseField
 	private double latitude;
