@@ -22,7 +22,7 @@ public class QueueEntry {
 
     
 	// Member variables
-    @DatabaseField(id = true, generatedId = true)
+    @DatabaseField(generatedId = true)
 	private int entryID;
     @DatabaseField
 	private Date timeOfEntry;
@@ -38,6 +38,11 @@ public class QueueEntry {
     private String qCode;
     @DatabaseField
 	private int position;
+    
+    // No-argument constructor for ORMLite
+    public QueueEntry() {
+    	
+    }
 	
 	// QueueEntry constructor
 	public QueueEntry(User u, Queue q, String textFieldInput, int numFieldInput) {

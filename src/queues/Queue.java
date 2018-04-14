@@ -53,11 +53,9 @@ public class Queue {
     @DatabaseField
 	private int maxSize;
     @DatabaseField
-	private double avgWaitTime;
+	private int avgWaitTime = 0; // in seconds
     @DatabaseField
 	private int numUsersProcessed;
-    @DatabaseField
-	private Vector<QueueEntry> queueEntries;
     @DatabaseField
 	private double longitude;
     @DatabaseField
@@ -109,16 +107,6 @@ public class Queue {
 	      return false;
 	}
 	
-	// Return true if queue contains a user with the given email
-	public boolean hasUser(String email) {
-		for (QueueEntry qe : queueEntries) {
-			if (qe.getUser().getEmail().equals(email)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public String getqCode() {
 		return qCode;
 	}
@@ -191,11 +179,11 @@ public class Queue {
 		this.maxSize = maxSize;
 	}
 
-	public double getAvgWaitTime() {
+	public int getAvgWaitTime() {
 		return avgWaitTime;
 	}
 
-	public void setAvgWaitTime(double avgWaitTime) {
+	public void setAvgWaitTime(int avgWaitTime) {
 		this.avgWaitTime = avgWaitTime;
 	}
 
@@ -205,14 +193,6 @@ public class Queue {
 
 	public void setNumUsersProcessed(int numUsersProcessed) {
 		this.numUsersProcessed = numUsersProcessed;
-	}
-
-	public Vector<QueueEntry> getQueueEntries() {
-		return queueEntries;
-	}
-
-	public void setQueueEntries(Vector<QueueEntry> queueEntries) {
-		this.queueEntries = queueEntries;
 	}
 
 	public double getLongitude() {
