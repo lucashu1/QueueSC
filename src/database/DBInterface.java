@@ -278,7 +278,6 @@ public class DBInterface {
 	/////////////////////////////
 	/////// Queue Queries ///////
 	/////////////////////////////
-		
 	public List<QueueEntry> getEntriesInQueue(String qCode) { 
 		// Returns a vector of QueueEntry objects for that queue; if queue DNE, returns empty vector
 		
@@ -288,36 +287,54 @@ public class DBInterface {
 			return new Vector<QueueEntry>();
 		}
 		
-		// Build the query
-		QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
-		Where<QueueEntry, Integer> where = queryBuilder.where();
-		// it must be the correct queue
-		where.eq(QueueEntry.QUEUE_FIELD_NAME, q);
-		PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();		
-		
-		// Run the query and return the result if appropriate
-		List<QueueEntry> results = queueEntryDao.query(preparedQuery);
-		if (results.size() == 0) {
+		try {
+			// Build query for the Queue
+			QueryBuilder<Queue, String> queueQB = queueDao.queryBuilder();
+			queueQB.where().eq(Queue.QCODE_FIELD_NAME, qCode);
+			
+			// Join with query for QueueEntry
+			QueryBuilder<QueueEntry, Integer> queueEntryQB = queueEntryDao.queryBuilder();
+			
+			return queueEntryQB.join(queueQB).query();
+		} catch (SQLException se) {
 			return new Vector<QueueEntry>();
-		} else {
-			return results;
 		}
 	}
 	
 	
-	public Vector<QueueEntry> getQueueEntriesForUser(String email) {
-		
+	public List<QueueEntry> getQueueEntriesForUser(String email) {
+		try {
+			// Build query for User
+			QueryBuilder<User, String> userQB = userDao.queryBuilder();
+			userQB.where().eq(User.EMAIL_FIELD_NAME, email);
+			
+			// Join with query for QueueEntries
+			QueryBuilder<QueueEntry, Integer> queueEntryQB = queueEntryDao.queryBuilder();
+			
+			return queueEntryQB.join(userQB).query();
+		} catch (SQLException se) {
+			return new Vector<QueueEntry>();
+		}
 	}
 	
-	public Vector<Queue> getQueuesManagedByUser(String email) {
-		
+	public List<Queue> getQueuesManagedByUser(String email) {
+		try {
+			// Build query for User
+			QueryBuilder<User, String> userQB = userDao.queryBuilder();
+			userQB.where().eq(User.EMAIL_FIELD_NAME, email);
+			
+			// Join with query for Queues
+			QueryBuilder<Queue, String> queueQB = queueDao.queryBuilder();
+			
+			return queueQB.join(userQB).query();
+		} catch (SQLException se) {
+			return new Vector<Queue>();
+		}
 	}
 
 	/////////////////////////////
 	/////// Delete models ///////
 	/////////////////////////////
-	// TODO:
-
 	public boolean deleteUserFromDB(String email) {
 		try {
 			userDao.deleteById(email);	
@@ -328,6 +345,7 @@ public class DBInterface {
 		}
 	}
 
+	
 	public boolean deleteQueueFromDB(String qCode) {
 		// Returns true if the queue was deleted successfully
 		try {
@@ -339,17 +357,25 @@ public class DBInterface {
 		}
 	}
 	
+	
 	public boolean deleteQueueEntryFromDB(String qCode, String email) {
 		try {
-			// Build the update query
-			DeleteBuilder<QueueEntry, Integer> deleteBuilder = queueEntryDao.deleteBuilder();
-			// Only get the right entry
-			deleteBuilder.where().eq(Queue.QCODE_FIELD_NAME, qCode);
-			// Increment the field
-			updateBuilder.updateColumnValue(Queue.NUMUSERSPROCESSED_FIELD_NAME, curVal + 1);
-
-			// Run the query
-			updateBuilder.update();
+			// Build query for the queue
+			QueryBuilder<Queue, String> queueQB = queueDao.queryBuilder();
+			queueQB.where().eq(Queue.QCODE_FIELD_NAME, qCode);
+			
+			// build query for the user
+			QueryBuilder<User, String> userQB = userDao.queryBuilder();
+			queueQB.where().eq(User.EMAIL_FIELD_NAME, email);
+			
+			// Combine into query for QueueEntry
+			QueryBuilder<QueueEntry, Integer> queueEntryQB = queueEntryDao.queryBuilder();
+			List<QueueEntry> results = queueEntryQB.join(queueQB).join(userQB).query();
+			if (results.size() != 1) {
+				return false;
+			}
+			
+			queueEntryDao.delete(results.get(0));
 			return true;
 		}
 		catch (SQLException se) {
@@ -358,9 +384,4 @@ public class DBInterface {
 		}		
 	}
 	
-
-	
-	
-
-
 }
