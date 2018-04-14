@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>QueueManagerInfo</title>
+
+<!-- begin boostrap import -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	crossorigin="anonymous"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	crossorigin="anonymous"></script>
+<!-- end boostrap import -->
+
+<link rel="stylesheet" href="GeneralStyle.css">
+
+<script>
+var socket;
+var pullQueueInfoRequest={qCode:""}
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) 
+        {
+            return sParameterName[1];
+        }
+    }
+}
+
+function connectToServer()
+{
+
+	socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
+	socket.onopen=function (){
+		pullQueueInfoRequest.qCode=GetURLParameter("qcode");
+		socket.send(JSON.stringify(pullQueueInfoRequest));
+	}
+	
+	socket.onmessage=function(event) {
+		var pullQueueInfoResponse=JSON.parse(event.data);
+		if(pullQueueInfoResponse.responseStatus=="qCodeInvalid"){
+			alert("Invalid qCode. Could not fetch data");
+		} else {
+			/*Creating divs for queues they are managing*/
+			var userCards="";
+			for(var j=0; j<pullQueueInfoResponse.users.length; j++){
+				var m;
+				var username = pullQueueInfoResponse.users[j];
+				m="<div class=\"card\" style=\"width: 18rem;\">"+
+				"<div class=\"card-body\">"+
+					"<h5 class=\"card-title\">"+username+"</h5>" +
+					"<a href=\"#\" class=\"card-link\">Remove</a>" +
+				"</div>"+
+				"</div>"+
+				"<br><br>";
+				userCards+=m;
+			}
+			console.log(userCards);
+			document.getElementById("userCards").innerHTML=userCards;
+		}
+	}
+}
+
+window.onload= connectToServer;
+</script>
+
+
+</head>
+<body>
+	<div id="navbar" class="topnav">
+		<h1>QueueSC</h1>
+	</div>
+	
+	<div class="container" style="padding-top: 20px;">
+		<div class="row justify-content-between">
+			<div class="col-4">
+				<h1>Users</h1>
+				<div id="userCards"></div>
+				<div class="card" style="width: 10rem;">
+					<div class="card-body" style="padding: 10px 15px;">
+						<h5 class="card-title"> User 1 </h5>
+						<a href="#" class="card-link" onClick="removeUser(\'mike\');">Remove User</a>
+					</div>
+				</div>
+				<div class="card" style="width: 10rem;">
+					<div class="card-body" style="padding: 10px 15px;">
+						<h5 class="card-title"> User 1 </h5>
+						<a href="#" class="card-link" onClick="removeUser(\'jorge\');">Remove User</a>
+					</div>
+				</div>
+				
+			</div>
+	
+			
+		</div>
+	</div>
+</body>
+</html>
