@@ -34,7 +34,7 @@
 			}
 			if (message.responseStatus == "success") {
 				alert("success");
-				window.location = "queueInfo.html?qCode="
+				window.location = "QueueInfo.html?qCode="
 						+ createGuestUser.qCode;
 			}
 
