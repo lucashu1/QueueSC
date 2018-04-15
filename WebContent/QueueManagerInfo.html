@@ -27,6 +27,9 @@
 <script>
 var socket;
 var pullQueueInfoRequest={qCode:""}
+var topUser;
+var topUserEmail;
+
 function GetURLParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
@@ -55,19 +58,17 @@ function connectToServer()
 		if(pullQueueInfoResponse.responseStatus=="qCodeInvalid"){
 			alert("Invalid qCode. Could not fetch data");
 		} else {
-			/*Creating divs for queues they are managing*/
-			var userCards="";
-			for(var j=0; j<pullQueueInfoResponse.usersInQueueNames.length; j++){
+			/*Listing users in queue*/
+			var users = pullQueueInfoResponse.usersInQueueNames;
+			topUser = pullQueueInfoResponse.usersInQueueNames[0];
+			topUserEmail = pullQueueInfoResponse.usersInQueueEmails[0];
+			for(var j=0; j<users.length; j++){
 				var m;
-				var username = pullQueueInfoResponse.usersInQueueNames[j];
-				var email = pullQueueInfoResponse.usersInQueueEmails[j];
-				m="<div class=\"card\" style=\"width: 18rem;\">"+
-				"<div class=\"card-body\">"+
-					"<h5 class=\"card-title\">"+username+"</h5>" +
-					"<a href=\"#\" class=\"card-link\">Remove</a>" + /*need to add remove function w/ name*/
-				"</div>"+
-				"</div>"+
-				"<br><br>";
+				var username = users[j];
+				m="<div class=\"card\" style=\"width: 10rem;\">" +
+					"<div class=\"card-body\" style=\"padding: 5px 15px;\">" +
+						"<h5 class=\"card-title\" style=\"margin-bottom: 5px;\">" +
+							username + "</h5></div></div>";
 				userCards+=m;
 			}
 			console.log(userCards);
@@ -76,19 +77,20 @@ function connectToServer()
 	}
 }
 
-function removeUser(var username){
+function removeTopUser(){
 	socket.onopen=function (){
 		var removeUserRequest={email:"", qCode:""}
+		removeUserRequest.email = topUserEmail;
 		removeUserRequest.qCode = GetURLParameter("qcode");
 		socket.send(JSON.stringify(removeUserRequest));
 	}
 	
 	socket.onmessage=function(event) {
-		var removeUserResponse=JSON.parse(event.data);
+		var removeUserResponse = JSON.parse(event.data);
 		if(removeUserResponse.responseStatus!="success!"){
 			alert("Could not remove user");
 		} else {
-			//refresh page
+			location.reload(); //refresh page to update
 		}
 	}
 }
@@ -104,26 +106,26 @@ window.onload= connectToServer;
 	</div>
 	
 	<div class="container" style="padding-top: 20px;">
-		<div class="row justify-content-between">
+		<div class="row">
 			<div class="col-4">
 				<h1>Users</h1>
 				<div id="userCards"></div>
+				
 				<div class="card" style="width: 10rem;">
-					<div class="card-body" style="padding: 10px 15px;">
-						<h5 class="card-title"> User 1 </h5>
-						<a href="#" class="card-link" onClick="removeUser(\'mike\');">Remove User</a>
+					<div class="card-body" style="padding: 5px 15px;">
+						<h5 class="card-title" style=" margin-bottom: 5px;">Martin</h5>
 					</div>
 				</div>
 				<div class="card" style="width: 10rem;">
-					<div class="card-body" style="padding: 10px 15px;">
-						<h5 class="card-title"> User 1 </h5>
-						<a href="#" class="card-link" onClick="removeUser(\'jorge\');">Remove User</a>
+					<div class="card-body" style="padding: 5px 15px;">
+						<h5 class="card-title" style=" margin-bottom: 5px;">Milan</h5>
 					</div>
 				</div>
 				
 			</div>
 			<div class="col-4">
-				<h1 id="QueueCodeDisplay">qcode</h1>
+				<h1 id="QueueCodeDisplay">Queue Code: </h1>
+				<a class="btn btn-warning btn-lg" onClick="removeTopUser()" role="button">Remove Top User</a>
 			</div>
 	
 		</div>
