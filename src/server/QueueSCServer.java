@@ -1,6 +1,7 @@
 package server;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Vector;
 
 import javax.websocket.EncodeException;
@@ -362,6 +363,7 @@ public class QueueSCServer {
 	}
 	
 	// LOAD INFO TO DISPLAY
+	// Pull info on 1 specific queue
 	private void processPullQueueInfoRequest(Message m, Session s) {
 		String qCode = m.getqCode();
 		Queue q = dbInterface.getQueueFromDB(qCode);
@@ -374,7 +376,7 @@ public class QueueSCServer {
 			return;
 		}
 		
-		// Fill all fields
+		// Fill all queue info fields
 		response.setqCode(qCode);
 		response.setQueueName(q.getName());
 		response.setQueueDescription(q.getDescription());
@@ -393,9 +395,25 @@ public class QueueSCServer {
 		response.setNumUsersProcessed(q.getNumUsersProcessed());
 		response.setNumCurrentEntries(dbInterface.getEntriesInQueue(qCode).size());
 		
+		// Set usersInQueue (names, emails)
+		Vector<QueueEntry> qes = new Vector<QueueEntry>(dbInterface.getEntriesInQueue(qCode));
+		Collections.sort(qes);
+		Vector<String> usersInQueueNames = new Vector<String>();
+		Vector<String> usersInQueueEmails = new Vector<String>();
+		for (int i = 0; i < qes.size(); i++) {
+			User u = qes.get(i).getUser();
+			usersInQueueNames.add(u.getFirstName() + " " + u.getLastName());
+			usersInQueueEmails.add(u.getEmail());
+		}
+		response.setUsersInQueueNames(usersInQueueNames);
+		response.setUsersInQueueEmails(usersInQueueEmails);
+		
+		// Send response
 		response.setResponseStatus("success");
 		sendMessage(response, s);
 	}
+	
+	// Pull info on 1 given user
 	private void processPullUserInfoRequest(Message m, Session s) {
 		String email = m.getEmail();
 		User u = dbInterface.getUserFromDB(email);

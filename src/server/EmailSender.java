@@ -56,7 +56,7 @@ public class EmailSender extends Thread {
 
 			// Send message
 			Transport.send(message);
-			System.out.println("Sent message successfully....");
+			System.out.println("Sent message successfully!");
 		} catch (MessagingException mex) {
 			mex.printStackTrace();
 		}

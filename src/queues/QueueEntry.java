@@ -8,7 +8,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import users.User;
 
 @DatabaseTable(tableName = "queueEntries")
-public class QueueEntry {
+public class QueueEntry implements Comparable<QueueEntry> {
 	
 	// Database field names
     public static final String ENTRYID_FIELD_NAME = "entryID";
@@ -118,5 +118,8 @@ public class QueueEntry {
 		this.qCode = qCode;
 	}
 	
+	public int compareTo(QueueEntry other) {
+		return (this.getPosition() - other.getPosition());
+	}
 	
 }

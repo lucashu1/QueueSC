@@ -40,10 +40,11 @@ import java.util.Vector;
 			// numFieldDescription, textFieldDescription,
 			// isLocationRestricted, isPublic, maxSize, latitude, longitude, radius,
 			// avgWaitTime, numUsersProcessed, numCurrentEntries
+			// TODO: users in queue (names, emails)
 			// - or -: failure (qCodeInvalid)
 	// pullUserInfo
 		// Request: email
-		// Response: email, firstName, lastName, queuesEntered (qCodes), queuesEnteredPositions, queuesManaging (qCodes)
+		// Response: email, firstName, lastName, queuesEntered (codes, names, positions), queuesManaging (codes, names)
 			// - or- : failure (emailInvalid)
 	// forceRefresh
 		// (Force client to refresh if queue is modified)
@@ -70,6 +71,8 @@ public class Message implements Serializable {
 	private double avgWaitTime;
 	private int numUsersProcessed;
 	private int numCurrentEntries;
+	private Vector<String> usersInQueueNames;
+	private Vector<String> usersInQueueEmails;
 	
 	// User info
 	private String email;
@@ -202,6 +205,22 @@ public class Message implements Serializable {
 	public void setNumCurrentEntries(int numCurrentEntries) {
 		this.numCurrentEntries = numCurrentEntries;
 	}
+	public Vector<String> getUsersInQueueNames() {
+		return usersInQueueNames;
+	}
+
+	public void setUsersInQueueNames(Vector<String> usersInQueueNames) {
+		this.usersInQueueNames = usersInQueueNames;
+	}
+
+	public Vector<String> getUsersInQueueEmails() {
+		return usersInQueueEmails;
+	}
+
+	public void setUsersInQueueEmails(Vector<String> usersInQueueEmails) {
+		this.usersInQueueEmails = usersInQueueEmails;
+	}
+
 	public String getEmail() {
 		return email;
 	}
