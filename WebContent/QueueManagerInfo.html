@@ -25,13 +25,13 @@
 <link rel="stylesheet" href="GeneralStyle.css">
 
 <script>
+
 var socket;
-var pullQueueInfoRequest={qCode:""}
+var pullQueueInfoRequest={qCode:""};
 var topUser;
 var topUserEmail;
 
-function GetURLParameter(sParam)
-{
+function GetURLParameter(sParam) {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split('&');
     for (var i = 0; i < sURLVariables.length; i++) 
@@ -44,8 +44,7 @@ function GetURLParameter(sParam)
     }
 }
 
-function connectToServer()
-{
+function connectToServer() {
 
 	socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
 	socket.onopen=function (){
@@ -53,11 +52,11 @@ function connectToServer()
 		socket.send(JSON.stringify(pullQueueInfoRequest));
 	}
 	
-	socket.onmessage=function(event) {
+	socket.onmessage = function(event) {
 		var pullQueueInfoResponse=JSON.parse(event.data);
 		if(pullQueueInfoResponse.responseStatus=="qCodeInvalid"){
 			alert("Invalid qCode. Could not fetch data");
-		} else {
+		} else {			
 			/*Listing users in queue*/
 			var users = pullQueueInfoResponse.usersInQueueNames;
 			topUser = pullQueueInfoResponse.usersInQueueNames[0];
@@ -65,11 +64,11 @@ function connectToServer()
 			for(var j=0; j<users.length; j++){
 				var m;
 				var username = users[j];
-				m="<div class=\"card\" style=\"width: 10rem;\">" +
+				m = "<div class=\"card\" style=\"width: 10rem;\">" +
 					"<div class=\"card-body\" style=\"padding: 5px 15px;\">" +
 						"<h5 class=\"card-title\" style=\"margin-bottom: 5px;\">" +
 							username + "</h5></div></div>";
-				userCards+=m;
+				userCards += m;
 			}
 			console.log(userCards);
 			document.getElementById("userCards").innerHTML=userCards;
@@ -79,7 +78,7 @@ function connectToServer()
 
 function removeTopUser(){
 	socket.onopen=function (){
-		var removeUserRequest={email:"", qCode:""}
+		var removeUserRequest={email:"", qCode:""};
 		removeUserRequest.email = topUserEmail;
 		removeUserRequest.qCode = GetURLParameter("qcode");
 		socket.send(JSON.stringify(removeUserRequest));
@@ -95,7 +94,10 @@ function removeTopUser(){
 	}
 }
 
-window.onload= connectToServer;
+window.onload = function(){
+	connectToServer();
+	document.getElementById("QueueCodeDisplay").innerHTML = "<h1>Queue Code: " + GetURLParameter("qcode") + "</h1>";
+}
 </script>
 
 
@@ -109,22 +111,10 @@ window.onload= connectToServer;
 		<div class="row">
 			<div class="col-4">
 				<h1>Users</h1>
-				<div id="userCards"></div>
-				
-				<div class="card" style="width: 10rem;">
-					<div class="card-body" style="padding: 5px 15px;">
-						<h5 class="card-title" style=" margin-bottom: 5px;">Martin</h5>
-					</div>
-				</div>
-				<div class="card" style="width: 10rem;">
-					<div class="card-body" style="padding: 5px 15px;">
-						<h5 class="card-title" style=" margin-bottom: 5px;">Milan</h5>
-					</div>
-				</div>
-				
+				<div id="userCards"></div>			
 			</div>
 			<div class="col-4">
-				<h1 id="QueueCodeDisplay">Queue Code: </h1>
+				<div id="QueueCodeDisplay"></div>
 				<a class="btn btn-warning btn-lg" onClick="removeTopUser()" role="button">Remove Top User</a>
 			</div>
 	
