@@ -2,8 +2,29 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>Queue Info</title>
 </head>
+
+<!-- begin boostrap import -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	crossorigin="anonymous"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	crossorigin="anonymous"></script>
+<!-- end boostrap import -->
+<link rel="stylesheet" href="GeneralStyle.css">
+
+
 <script>
 var userQueueRequest={type:"pullUserInfoRequest", email:"", queueCode:""}
 var queueIndex;
@@ -63,9 +84,9 @@ function connectToServer()
 			{
 				
 				queueIndex=  userQueueResponse.queuesEnteredCodes.indexOf(userQueueRequest.queueCode); 
-				document.getElementById("queueName").innerHTML= "Name: "+ userQueueResponse.queuesEnteredNames[queueIndex];
-				document.getElementById("queuePosition").innerHTML= "Position:" + userQueueResponse.queuesEnteredPositions[queueIndex];
-				document.getElementById("averageWaitTime").innerHTML="Wait Time: " +userQueueResponse.avgWaitTime;
+				document.getElementById("queueName").innerHTML= "<h2>Name: "+ userQueueResponse.queuesEnteredNames[queueIndex] +"</h2>";
+				document.getElementById("queuePosition").innerHTML= "<h2>Position:" + userQueueResponse.queuesEnteredPositions[queueIndex] +"</h2>";
+				document.getElementById("averageWaitTime").innerHTML="<h2>Wait Time: " +userQueueResponse.avgWaitTime + "</h2>";
 			}
 			}
 		
@@ -79,9 +100,19 @@ window.onload = connectToServer;
 </script>
 
 <body>
-<div id="queueName">Test</div>
-<div id="queuePosition">Test</div>
-<div id="averageWaitTime">Test</div>
-<input type="button" id="leaveQueue" value="Leave Queue" onclick="leaveQueue()"></input>
+<div id="navbar" class="topnav">
+	<h1>QueueSC</h1>
+</div>
+
+<div class="container vertical-center input-form-wrapper">
+		<form class="general-form-style">
+			<div id="queueName"><h2>Test</h2></div>
+			<div id="queuePosition">Test</div>
+			<div id="averageWaitTime">Test</div>
+			<br><br>
+			<input class="btn btn-warning btn-lg" type="button" id="leaveQueue" value="Leave Queue" onclick="leaveQueue()"></input>
+		</form>
+</div>
+
 </body>
 </html>
