@@ -1,6 +1,7 @@
 package database;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.Vector;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
-import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
@@ -32,10 +32,15 @@ public class DBInterface {
 	private Dao<User, String> userDao; // <class to be persisted, type of primary key>
 	private Dao<Queue, String> queueDao;
 	private Dao<QueueEntry, Integer> queueEntryDao; // assume queueEntry has auto-generated id
+	
+	private static final String acceptableChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"; // for generating qCode
+	private static final int lengthOfQCode = 6;
+	private static SecureRandom rnd;
 
 	
 	public DBInterface() {
 		setupDatabase();
+		rnd = new SecureRandom();
 	}
 	
 	
@@ -56,8 +61,20 @@ public class DBInterface {
 		}
 		catch (Exception e) {
 			System.out.println("There is a problem connecting to the database");
+			e.printStackTrace(System.out);
 		}
 		
+	}
+	
+	// WARNING: THIS DELETES ALL DATA STORED IN DATABASE
+	public void clearTables() {
+		try {
+			TableUtils.clearTable(connectionSource, User.class);
+			TableUtils.clearTable(connectionSource, Queue.class);
+			TableUtils.clearTable(connectionSource, QueueEntry.class);
+		} catch (SQLException se) {
+			System.out.println("Problem in DBInterface.clearTables().");
+		}
 	}
 	
 	
@@ -79,7 +96,7 @@ public class DBInterface {
 	
 	public boolean addUsertoDB(User u) {
 		// Returns true if the the user object was successfully added to DB
-		if (getUserFromDB(u.getEmail()) == null) {
+		if (getUserFromDB(u.getEmail()) != null) {
 			return false;
 		}
 		try {
@@ -94,7 +111,7 @@ public class DBInterface {
 	
 	public boolean addQueueToDB(Queue q) {
 		// Returns true if the the queue object was successfully added to DB
-		if (getQueueFromDB(q.getqCode()) == null) {
+		if (getQueueFromDB(q.getqCode()) != null) {
 			return false;
 		}
 		try {
@@ -109,7 +126,7 @@ public class DBInterface {
 	
 	public boolean addQueueEntryToDB(QueueEntry qe) {
 		// Returns true if the the queue object was successfully added to DB
-		if (getQueueEntryFromDB(qe.getQueue().getqCode(), qe.getUser().getEmail()) == null) {
+		if (getQueueEntryFromDB(qe.getQueue().getqCode(), qe.getUser().getEmail()) != null) {
 			return false;
 		}
 		try {
@@ -356,6 +373,30 @@ public class DBInterface {
 	}
 	
 	
+	public int getNumEntriesInQueue(String qCode) { 
+		// Returns the number of QueueEntries in a Queue; if queue DNE or error, returns -1
+		
+		// See if that queue exists and get the object
+		Queue q = getQueueFromDB(qCode);
+		if (q == null) {
+			return -1;
+		}
+		
+		try {
+			// Build query for the Queue
+			QueryBuilder<Queue, String> queueQB = queueDao.queryBuilder();
+			queueQB.where().eq(Queue.QCODE_FIELD_NAME, qCode);
+			
+			// Join with query for QueueEntry
+			QueryBuilder<QueueEntry, Integer> queueEntryQB = queueEntryDao.queryBuilder();
+			
+			return queueEntryQB.join(queueQB).query().size();
+		} catch (SQLException se) {
+			return -1;
+		}
+	}
+	
+	
 	public List<QueueEntry> getQueueEntriesForUser(String email) {
 		try {
 			// Build query for User
@@ -385,6 +426,49 @@ public class DBInterface {
 		} catch (SQLException se) {
 			return new Vector<Queue>();
 		}
+	}
+	
+	
+	public Vector<String> getQCodesInUse() {
+		// Get all Queues from DB
+		QueryBuilder<Queue, String> queueQB = null;
+		List<Queue> activeQueues = null;
+		try {
+			// Query for all queues
+			queueQB = queueDao.queryBuilder();
+			activeQueues = queueQB.query();
+		} catch (SQLException se) {
+			return new Vector<String>();
+		}
+		
+		// Get their QCodes and put in vector
+		Vector<String> returnVector = new Vector<String>();
+		for (Queue q : activeQueues) {
+			returnVector.add(q.getqCode());
+		}
+		return returnVector;
+	}
+	
+	
+	public String generateValidQCode() {
+		// Get a list of current Q codes in DB
+		Vector<String> usedQCodes = getQCodesInUse();
+		String newQCode;
+		while (true) {
+			newQCode = generateRandomStringHelper(lengthOfQCode);
+			if (!usedQCodes.contains(newQCode)) {
+				return newQCode;
+			}
+		}
+	}
+	
+	
+	private String generateRandomStringHelper(int len) {
+		StringBuilder sb = new StringBuilder(len);
+		for( int i = 0; i < len; i++ ) {
+			sb.append( acceptableChars.charAt( rnd.nextInt(acceptableChars.length())));
+		}
+		return sb.toString();
 	}
 
 	
@@ -439,5 +523,6 @@ public class DBInterface {
 			return false;
 		}		
 	}
+	
 	
 }
