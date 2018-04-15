@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -429,7 +430,7 @@ public class DBInterface {
 	}
 	
 	
-	public Vector<String> getQCodesInUse() {
+	public HashSet<String> getQCodesInUse() {
 		// Get all Queues from DB
 		QueryBuilder<Queue, String> queueQB = null;
 		List<Queue> activeQueues = null;
@@ -438,21 +439,21 @@ public class DBInterface {
 			queueQB = queueDao.queryBuilder();
 			activeQueues = queueQB.query();
 		} catch (SQLException se) {
-			return new Vector<String>();
+			return new HashSet<String>();
 		}
 		
 		// Get their QCodes and put in vector
-		Vector<String> returnVector = new Vector<String>();
+		HashSet<String> returnSet = new HashSet<String>();
 		for (Queue q : activeQueues) {
-			returnVector.add(q.getqCode());
+			returnSet.add(q.getqCode());
 		}
-		return returnVector;
+		return returnSet;
 	}
 	
 	
 	public String generateValidQCode() {
 		// Get a list of current Q codes in DB
-		Vector<String> usedQCodes = getQCodesInUse();
+		HashSet<String> usedQCodes = getQCodesInUse();
 		String newQCode;
 		while (true) {
 			newQCode = generateRandomStringHelper(lengthOfQCode);
