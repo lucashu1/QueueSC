@@ -57,9 +57,10 @@ function connectToServer()
 		} else {
 			/*Creating divs for queues they are managing*/
 			var userCards="";
-			for(var j=0; j<pullQueueInfoResponse.users.length; j++){
+			for(var j=0; j<pullQueueInfoResponse.usersInQueueNames.length; j++){
 				var m;
-				var username = pullQueueInfoResponse.users[j];
+				var username = pullQueueInfoResponse.usersInQueueNames[j];
+				var email = pullQueueInfoResponse.usersInQueueEmails[j];
 				m="<div class=\"card\" style=\"width: 18rem;\">"+
 				"<div class=\"card-body\">"+
 					"<h5 class=\"card-title\">"+username+"</h5>" +
@@ -84,14 +85,13 @@ function removeUser(var username){
 	
 	socket.onmessage=function(event) {
 		var removeUserResponse=JSON.parse(event.data);
-		if(removeUserResponse.responseStatus=="success!"){
+		if(removeUserResponse.responseStatus!="success!"){
 			alert("Could not remove user");
 		} else {
 			//refresh page
 		}
 	}
 }
-
 
 window.onload= connectToServer;
 </script>
@@ -121,6 +121,9 @@ window.onload= connectToServer;
 					</div>
 				</div>
 				
+			</div>
+			<div class="col-4">
+				<h1 id="QueueCodeDisplay">qcode</h1>
 			</div>
 	
 		</div>

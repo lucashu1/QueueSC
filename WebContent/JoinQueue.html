@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Join Queue</title>
+
+	<!-- begin boostrap import -->
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+		crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+		crossorigin="anonymous"></script>
+	<!-- end boostrap import -->
+
+	<script>
+		function yesNoCheckLocationRestriction() {
+		    if (document.getElementById('InputLocationRestrictionYes').checked) {
+		        document.getElementById('SetRange').style.display='block';
+		    } else {
+		    		document.getElementById('SetRange').style.display='none';
+		    }
+		}
+	</script>
+	
+	
+	<link rel="stylesheet" href="GeneralStyle.css">
+</head>
+
+
+<body>
+	<div id="navbar" class="topnav">
+		<h1>QueueSC</h1>
+	</div>
+
+	<div class="container vertical-center input-form-wrapper">
+		<form class="general-form-style">
+			
+			<div class="form-group" id="QueueCode">
+				<label for="QueueCode">Enter QueueCode:</label>
+				<input type="text" class="form-control" id="QueueCode" >
+			</div>
+
+			<button type="submit" class="btn btn-primary">Join Queue!</button>
+		</form>
+	</div>
+
+</body>
+</html>
