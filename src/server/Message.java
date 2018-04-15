@@ -6,9 +6,10 @@ import java.util.Vector;
 // ---------- POSSIBLE MESSAGE TYPES & NECESSARY FIELDS ----------
 // QUEUE MODIFICATION:
 	// createQueue
-		// Request: qCode, queueName, queueDescription, email (of owner), (numFieldDescription, textFieldDescription), 
+		// Request: queueName, queueDescription, email (of owner), (numFieldDescription, textFieldDescription), 
 			// isLocationRestricted, isPublic, maxSize, (latitude, longitude, radius)
-		// Response: success/failure (qCodeTaken)
+			// (qCode is automatically generated from the database)
+		// Response: qCode, success/failure (qCodeTaken)
 	// deleteQueue
 		// Request: qCode
 		// Response: success/failure (qCodeInvalid)

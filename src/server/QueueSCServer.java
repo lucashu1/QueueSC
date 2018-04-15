@@ -122,6 +122,7 @@ public class QueueSCServer {
 		
 		dbInterface.addQueueToDB(q);
 		Message resp = new Message("createQueueResponse"); // Success message
+		resp.setqCode(qCode);
 		resp.setResponseStatus("success");
 		sendMessage(resp, s);
 	}
@@ -208,6 +209,7 @@ public class QueueSCServer {
 		
 		// Add queue entry
 		QueueEntry qe = new QueueEntry(u, q, textFieldInput, numFieldInput);
+		qe.setPosition(dbInterface.getNumEntriesInQueue(qCode)+1);
 		dbInterface.addQueueEntryToDB(qe);
 		Message resp = new Message("enqueueResponse");
 		resp.setResponseStatus("success");
