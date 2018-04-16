@@ -56,9 +56,9 @@ public class DBInterface {
 			queueEntryDao = DaoManager.createDao(connectionSource, QueueEntry.class);
 			
 			// Create database tables if they do not exist
-			TableUtils.createTable(connectionSource, User.class);
-			TableUtils.createTable(connectionSource, Queue.class);
-			TableUtils.createTable(connectionSource, QueueEntry.class);
+			TableUtils.createTableIfNotExists(connectionSource, User.class);
+			TableUtils.createTableIfNotExists(connectionSource, Queue.class);
+			TableUtils.createTableIfNotExists(connectionSource, QueueEntry.class);
 		}
 		catch (Exception e) {
 			System.out.println("There is a problem connecting to the database");
@@ -77,7 +77,7 @@ public class DBInterface {
 			System.out.println("Problem in DBInterface.clearTables().");
 		}
 	}
-	
+
 	
 	public boolean close() {
 		if (connectionSource != null) {
@@ -180,18 +180,20 @@ public class DBInterface {
 		
 		// Build the query
 		try {
+			// Build query for the user
+			QueryBuilder<User, String> userQB = userDao.queryBuilder();
+			userQB.where().eq(User.EMAIL_FIELD_NAME, email);
+			
+			// Build query for the queue
+			QueryBuilder<Queue, String> queueQB = queueDao.queryBuilder();
+			queueQB.where().eq(Queue.QCODE_FIELD_NAME, qCode);
+			
+			// Join with query for QueueEntries
 			QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
-			Where<QueueEntry, Integer> where = queryBuilder.where();
-			// the user in the entry must be the one we are looking for
-			where.eq(QueueEntry.USER_FIELD_NAME, allegedUser);
-			// and
-			where.and();
-			// it must be the correct queue
-			where.eq(QueueEntry.QUEUE_FIELD_NAME, allegedQueue);
-			PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();
 			
 			// Run the query and return the result if appropriate
-			List<QueueEntry> results = queueEntryDao.query(preparedQuery);
+			List<QueueEntry> results = queryBuilder.join(queueQB).query();
+
 			if (results.size() != 1) {
 				return (QueueEntry) null;
 			} else {
@@ -214,18 +216,17 @@ public class DBInterface {
 		
 		// Build the query
 		try {
+			// Build query for queue
+			QueryBuilder<Queue, String> queueQB = queueDao.queryBuilder();
+			queueQB.where().eq(Queue.QCODE_FIELD_NAME, qCode);
+			
+			// Build query for queueEntry and join with queue query
 			QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
-			Where<QueueEntry, Integer> where = queryBuilder.where();
-			// the queueEntry must be in the correct queue
-			where.eq(QueueEntry.QUEUE_FIELD_NAME, allegedQueue);
-			// and
-			where.and();
-			// the queueEntry must be the first in that queue
-			where.eq(QueueEntry.POSITION_FIELD_NAME, 1);
-			PreparedQuery<QueueEntry> preparedQuery = queryBuilder.prepare();
+			queryBuilder.where().eq(QueueEntry.POSITION_FIELD_NAME, position);
+
 			
 			// Run the query and return the result if appropriate
-			List<QueueEntry> results = queueEntryDao.query(preparedQuery);
+			List<QueueEntry> results = queryBuilder.query();
 			if (results.size() != 1) {
 				return (QueueEntry) null;
 			} else {
