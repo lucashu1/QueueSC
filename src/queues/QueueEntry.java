@@ -16,13 +16,14 @@ public class QueueEntry implements Comparable<QueueEntry> {
     public static final String TEXTFIELDINPUT_FIELD_NAME = "textFieldInput";
     public static final String NUMFIELDINPUT_FIELD_NAME = "numFieldInput";
     public static final String USER_FIELD_NAME = "user";
+    public static final String USEREMAIL_FIELD_NAME = "userEmail";
     public static final String QUEUE_FIELD_NAME = "queue";
-    public static final String QCODE_FIELD_NAME = "qcode";
+    public static final String QCODE_FIELD_NAME = "qCode";
     public static final String POSITION_FIELD_NAME = "position";
 
     
 	// Member variables
-    @DatabaseField(generatedId = true)
+    @DatabaseField(generatedIdSequence = "queueentries_id_seq")
 	private int entryID;
     @DatabaseField
 	private Date timeOfEntry;
@@ -35,8 +36,6 @@ public class QueueEntry implements Comparable<QueueEntry> {
     @DatabaseField(foreign = true)
 	private Queue queue;
     @DatabaseField
-    private String qCode;
-    @DatabaseField
 	private int position;
     
     // No-argument constructor for ORMLite
@@ -48,7 +47,6 @@ public class QueueEntry implements Comparable<QueueEntry> {
 	public QueueEntry(User u, Queue q, String textFieldInput, int numFieldInput) {
 		this.user = u;
 		this.queue = q;
-		this.qCode = q.getqCode();
 		this.textFieldInput = textFieldInput;
 		this.numFieldInput = numFieldInput;
 		timeOfEntry = new Date(); // Track current date/time
@@ -93,7 +91,7 @@ public class QueueEntry implements Comparable<QueueEntry> {
 	public void setUser(User u) {
 		this.user = u;
 	}
-
+	
 	public Queue getQueue() {
 		return queue;
 	}
@@ -108,14 +106,6 @@ public class QueueEntry implements Comparable<QueueEntry> {
 	
 	public void setPosition(int pos) {
 		this.position = pos;
-	}
-	
-	public String getqCode() {
-		return qCode;
-	}
-
-	public void setqCode(String qCode) {
-		this.qCode = qCode;
 	}
 	
 	public int compareTo(QueueEntry other) {

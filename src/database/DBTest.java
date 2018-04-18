@@ -1,5 +1,7 @@
 package database;
 
+import java.util.List;
+
 import queues.Queue;
 import queues.QueueEntry;
 import users.User;
@@ -32,7 +34,14 @@ public class DBTest {
 			System.out.println("The queue was not found in db...");
 		}
 		QueueEntry newQE = new QueueEntry(userFromDB2, queueFromDB, "", 0);
+		System.out.println("b4 QE email: " + newQE.getUserEmail());
+		System.out.println("b4 QE qCode: " + newQE.getqCode());
+
 		db.addQueueEntryToDB(newQE);
+		List<QueueEntry> results = db.getAllQueueEntries();
+		for (QueueEntry qe : results) {
+			System.out.println("email: " + qe.getUserEmail());
+		}
 		// Get that queue entry from the DB and print the details
 		QueueEntry qeFromDB = db.getQueueEntryFromDB(newQCode, "lucashu@usc.edu");
 		System.out.println("QE index: " + qeFromDB.getEntryID());

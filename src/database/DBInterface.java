@@ -55,6 +55,8 @@ public class DBInterface {
 			queueDao = DaoManager.createDao(connectionSource, Queue.class);
 			queueEntryDao = DaoManager.createDao(connectionSource, QueueEntry.class);
 			
+			dropTables();
+			
 			// Create database tables if they do not exist
 			TableUtils.createTableIfNotExists(connectionSource, User.class);
 			TableUtils.createTableIfNotExists(connectionSource, Queue.class);
@@ -73,6 +75,16 @@ public class DBInterface {
 			TableUtils.clearTable(connectionSource, User.class);
 			TableUtils.clearTable(connectionSource, Queue.class);
 			TableUtils.clearTable(connectionSource, QueueEntry.class);
+		} catch (SQLException se) {
+			System.out.println("Problem in DBInterface.clearTables().");
+		}
+	}
+	
+	public void dropTables() {
+		try {
+			TableUtils.dropTable(connectionSource, User.class, true);
+			TableUtils.dropTable(connectionSource, Queue.class, true);
+			TableUtils.dropTable(connectionSource, QueueEntry.class, true);
 		} catch (SQLException se) {
 			System.out.println("Problem in DBInterface.clearTables().");
 		}
@@ -127,7 +139,7 @@ public class DBInterface {
 	
 	public boolean addQueueEntryToDB(QueueEntry qe) {
 		// Returns true if the the queue object was successfully added to DB
-		if (getQueueEntryFromDB(qe.getQueue().getqCode(), qe.getUser().getEmail()) != null) {
+		if (getQueueEntryFromDB(qe.getqCode(), qe.getUser().getEmail()) != null) {
 			return false;
 		}
 		try {
@@ -135,6 +147,8 @@ public class DBInterface {
 			return true;
 		} catch (SQLException se) {
 			// There was some kind of problem saving the user to the db
+			se.printStackTrace();
+			System.out.println("problem in addQueueEntryToDB");
 			return false;
 		}			
 	}
@@ -164,6 +178,21 @@ public class DBInterface {
 		}
 	}
 	
+	public List<QueueEntry> getAllQueueEntries() {
+		try {
+			// Build the query
+			QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
+		
+			// Run the query and return the result if appropriate
+			return queryBuilder.query();
+
+		}
+		catch (SQLException se) {
+			System.out.println("Problem reading from database");
+			return (List<QueueEntry>) null; 
+		}
+	}
+	
 	
 	public QueueEntry getQueueEntryFromDB(String qCode, String email) {
 		// Get the user object
@@ -178,22 +207,19 @@ public class DBInterface {
 			return (QueueEntry) null;
 		}
 		
-		// Build the query
 		try {
-			// Build query for the user
-			QueryBuilder<User, String> userQB = userDao.queryBuilder();
-			userQB.where().eq(User.EMAIL_FIELD_NAME, email);
-			
-			// Build query for the queue
+			// Build query for queue
 			QueryBuilder<Queue, String> queueQB = queueDao.queryBuilder();
 			queueQB.where().eq(Queue.QCODE_FIELD_NAME, qCode);
 			
-			// Join with query for QueueEntries
-			QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
+			// Build query for user
+			QueryBuilder<User, String> userQB = userDao.queryBuilder();
+			userQB.where().eq(User.EMAIL_FIELD_NAME, email);
 			
-			// Run the query and return the result if appropriate
-			List<QueueEntry> results = queryBuilder.join(queueQB).query();
-
+			
+			// Join the query, run it, and return the result if appropriate
+			QueryBuilder<QueueEntry, Integer> qb = queueEntryDao.queryBuilder();
+			List<QueueEntry> results = qb.join(queueQB).join(userQB).query();
 			if (results.size() != 1) {
 				return (QueueEntry) null;
 			} else {
@@ -207,6 +233,8 @@ public class DBInterface {
 
 	}
 	
+	
+	// FIX
 	public QueueEntry getQueueEntryFromDBByPosition(String qCode, int position) {
 		// Get the queue object
 		Queue allegedQueue = getQueueFromDB(qCode);
@@ -220,13 +248,12 @@ public class DBInterface {
 			QueryBuilder<Queue, String> queueQB = queueDao.queryBuilder();
 			queueQB.where().eq(Queue.QCODE_FIELD_NAME, qCode);
 			
-			// Build query for queueEntry and join with queue query
+			// Build query for queueEntry
 			QueryBuilder<QueueEntry, Integer> queryBuilder = queueEntryDao.queryBuilder();
 			queryBuilder.where().eq(QueueEntry.POSITION_FIELD_NAME, position);
-
 			
 			// Run the query and return the result if appropriate
-			List<QueueEntry> results = queryBuilder.query();
+			List<QueueEntry> results = queryBuilder.join(queueQB).query();
 			if (results.size() != 1) {
 				return (QueueEntry) null;
 			} else {
@@ -351,6 +378,7 @@ public class DBInterface {
 	/////////////////////////////
 	/////// Queue Queries ///////
 	/////////////////////////////
+	// FIX
 	public List<QueueEntry> getEntriesInQueue(String qCode) { 
 		// Returns a vector of QueueEntry objects for that queue; if queue DNE, returns empty vector
 		
@@ -374,7 +402,7 @@ public class DBInterface {
 		}
 	}
 	
-	
+	// FIX
 	public int getNumEntriesInQueue(String qCode) { 
 		// Returns the number of QueueEntries in a Queue; if queue DNE or error, returns -1
 		
@@ -398,7 +426,7 @@ public class DBInterface {
 		}
 	}
 	
-	
+	// FIX
 	public List<QueueEntry> getQueueEntriesForUser(String email) {
 		try {
 			// Build query for User
@@ -414,7 +442,7 @@ public class DBInterface {
 		}
 	}
 	
-	
+	// FIX
 	public List<Queue> getQueuesManagedByUser(String email) {
 		try {
 			// Build query for User
@@ -499,7 +527,7 @@ public class DBInterface {
 		}
 	}
 	
-	
+	// FIX
 	public boolean deleteQueueEntryFromDB(String qCode, String email) {
 		try {
 			// Build query for the queue
