@@ -62,12 +62,11 @@ function connectToServer()
 	socket.onmessage=function(event)
 	{
 		var message=JSON.parse(event.data);
-		if(messgage.type=="pullQueueInfoResponse")
+		if(message.type=="pullQueueInfoResponse")
 		{
 			if(message.responseStatus=="qCodeInvalid")
 				{
-				//how to display error message;
-				//document.getElementById("emailTaken").innerHTML=message.responseStatus;
+				document.getElementById("errorCode").innerHTML="Invalid Queue Code";
 				}
 			else if( message.responseStatus=="success" && (message.numFieldRequired==true || message.textFieldRequired==true || numFieldInput==true))
 				{

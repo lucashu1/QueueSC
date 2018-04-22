@@ -51,7 +51,30 @@
 		    }
 		}
 	</script>
+	<script>
+	var socket;
+	var createQueueRequest={type:"createQueueRequest", name:"SAL CP", email:"natasha@gmail.com"};
+	var queueCode;
+	function onSubmit()
+	{
+		window.location="QueueInfo.html?qcode="+queueCode;
+		
+	}
+	function connectToServer()
+	{
+		socket.send(JSON.stringify(createQueueRequest))
+		socket.onmessage=function(event)
+		{
+			var message=JSON.parse(event.data);
+			if(message.responseStatus=="success")
+				{
+				queueCode=message.qCode;
+				}
+			
+		}
+	}
 	
+	</script>
 	
 	<link rel="stylesheet" href="GeneralStyle.css">
 </head>
@@ -63,7 +86,7 @@
 	</div>
 
 	<div class="container vertical-center input-form-wrapper">
-		<form class="general-form-style">
+		<form class="general-form-style" onsubmit="onSubmit(); return false;">
 			<div class="form-group">
 				<label for="InputQueueName">Queue Name</label> <input type="text"
 					class="form-control" id="InputQueueName">
