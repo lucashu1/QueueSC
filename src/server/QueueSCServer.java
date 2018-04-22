@@ -88,7 +88,7 @@ public class QueueSCServer {
 	
 	// QUEUE FUNCTIONALITY
 	private void processCreateQueueRequest(Message m, Session s) {
-		String qCode = m.getqCode();
+		String qCode = dbInterface.generateValidQCode();
 		String name = m.getQueueName();
 		String description = m.getQueueDescription();
 		String ownerEmail = m.getEmail();
