@@ -6,7 +6,7 @@
 	var socket;
 	socket = new WebSocket("ws://localhost:8080/QueueSC/ws");
 	var createGuestUser = {
-		type : "guestLogInRequest",
+		type : "guestLoginRequest",
 		email : "",
 		firstName : "",
 		lastName : "",

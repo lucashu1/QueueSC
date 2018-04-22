@@ -25,6 +25,102 @@
 	
 	<!--  NEED TO ADD JS VALIDATION -->
 	<link rel="stylesheet" href="GeneralStyle.css">
+<script>
+var socket;
+var checkQueueValidity= {type:"pullQueueInfoRequest",qCode:""};
+var userEmail;
+var longitude;
+var latitude;
+var position;
+var joinQueueRequest ={ type:"enqueueRequest", qcode:"", email:"", longitude:"", latitude:""};
+
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) 
+        {
+            return sParameterName[1];
+        }
+    }
+}
+
+
+function onSubmit()
+{
+	checkQueueValidity.qCode= document.getElementById("QueueCode").value;
+	socket.send(JSON.stringify(checkQueueValidity));
+	userEmail= GetURLParameter("email");	
+}
+
+function connectToServer()
+{
+	socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
+	socket.onmessage=function(event)
+	{
+		var message=JSON.parse(event.data);
+		if(messgage.type=="pullQueueInfoResponse")
+		{
+			if(message.responseStatus=="qCodeInvalid")
+				{
+				//how to display error message;
+				//document.getElementById("emailTaken").innerHTML=message.responseStatus;
+				}
+			else if( message.responseStatus=="success" && (message.numFieldRequired==true || message.textFieldRequired==true || numFieldInput==true))
+				{
+				window.location="JoinQueueExtraInfo.hmtl?qCode="+checkQueueValidity.qCode+"&email="+userEmail;
+				}
+			else if(message.responseStatus=="success")
+				{
+				position= navigator.geolocation.getCurrentPosition();
+				joinQueueRequest.qCode=checkQueueValidity.qCode; 
+				joinQueueRequest.email=userEmail;
+				joinQueueRequest.longitude = position.coords.longitude;
+				joinQueueRequest.latitudue=position.coords.longitude;
+				socket.send(JSON.stringify(joinQueueRequest));
+				
+				}
+			}
+		else if (message.type="joinQueueResponse") 
+			{
+			if(message.responseStatus=="qCodeInvalid")
+				{
+				document.getElementById("errorCode").innerHTML= "Queue Code Invalid"
+				}
+			else if(message.responseStatus=="userOutOfRange")
+				{
+				document.getElementById("errorCode").innerHTML= "User Out of Range"
+				}
+			else if(message.responseStatus=="queueAlreadyFull")
+				{
+				document.getElementById("errorCode").innerHTML= "Queue Already Full"
+				}
+			else if(message.resonseStatus=="userAlreadyInQueue")
+				{
+				document.getElementById("errorCode").innerHTML= "User already in Queue"
+				}
+			else if(message.responseStatus=="success")
+				{
+				alert("Successfully joined queue");
+				window.location="QueueInfo.html?qCode="+checkQueueValidity.qCode;
+				}
+			
+			}
+		
+	}
+}
+
+
+
+
+
+
+
+window.onload= connectToServer;
+</script>
 </head>
 
 
@@ -34,13 +130,14 @@
 	</div>
 
 	<div class="container vertical-center input-form-wrapper">
-		<form class="general-form-style">
-			
+		<form class="general-form-style" onsubmit="onSubmit(); return false;">
 			<div class="form-group" id="QueueCode">
 				<label for="QueueCode">Enter QueueCode:</label>
 				<input type="text" class="form-control" id="QueueCode" >
 			</div>
-			<p style="color:red"> Invalid QueueCode!</p>
+			<div id="errorCode">
+			<p style="color:red"></p>
+			</div>
 			<button type="submit" class="btn btn-primary">Join Queue!</button>
 		</form>
 	</div>
