@@ -25,7 +25,7 @@ public class QueueSCServer {
 	private static Vector<Session> sessions = new Vector<Session>();
 //	private QueueManager qm;
 //	private UserManager um;
-	private DBInterface dbInterface;
+	private DBInterface dbInterface = new DBInterface();
 	
 	@OnOpen
 	public void open(Session session) {
@@ -69,6 +69,7 @@ public class QueueSCServer {
 	@OnError
 	public void error(Throwable error) {
 		System.out.println("Error!");
+		error.printStackTrace();
 	}
 	
 	// ---------- PROCESS MESSAGES ---------- //
