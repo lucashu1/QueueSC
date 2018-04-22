@@ -37,11 +37,23 @@
 		<form class="general-form-style">
 			
 			<!--  NEED TO ADD APPROPRIATE FIELDS FOR QUEU -->
-			<div class="form-group" id="QueueCode">
-				<label for="QueueCode">Enter QueueCode:</label>
-				<input type="text" class="form-control" id="QueueCode" >
+			<div class="form-group" id="QueueInfo">
+				<label for="QueueInfo">This Queue Requires Additonal Inputs </br> </label>
+				<p> QueueCode: </p>
 			</div>
-
+			<div class="form-group" id="InputTextField">
+				<label for="InputTextField">Input Text</label>
+				<input type="text" class="form-control" id="InputTextField" >
+			</div>
+			<div class="form-group" id="InputNumberField">
+				<label for="InputNumberField">Input Number</label>
+				<input type="number" class="form-control" id="InputNumberField" min="0" >
+			</div>
+			<div class="form-group" id="LocationRestriction">
+				<label for="Location Restriction">Location Restriction On, Must Be Within:</label>
+			</div>
+			<p style="color:red"> Sorry This Queue is Full!</p>
+			<p style="color:red"> You Are Not Within Range of Queue! (Location Restriction Enabled)</p>
 			<button type="submit" class="btn btn-primary">Join Queue!</button>
 		</form>
 	</div>

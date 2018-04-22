@@ -34,13 +34,13 @@ public class DBTest {
 			System.out.println("The queue was not found in db...");
 		}
 		QueueEntry newQE = new QueueEntry(userFromDB2, queueFromDB, "", 0);
-		System.out.println("b4 QE email: " + newQE.getUserEmail());
-		System.out.println("b4 QE qCode: " + newQE.getqCode());
+		System.out.println("b4 QE email: " + newQE.getUser().getEmail());
+		System.out.println("b4 QE qCode: " + newQE.getQueue().getqCode());
 
 		db.addQueueEntryToDB(newQE);
 		List<QueueEntry> results = db.getAllQueueEntries();
 		for (QueueEntry qe : results) {
-			System.out.println("email: " + qe.getUserEmail());
+			System.out.println("email: " + qe.getUser().getEmail());
 		}
 		// Get that queue entry from the DB and print the details
 		QueueEntry qeFromDB = db.getQueueEntryFromDB(newQCode, "lucashu@usc.edu");

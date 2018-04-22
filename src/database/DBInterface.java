@@ -139,7 +139,7 @@ public class DBInterface {
 	
 	public boolean addQueueEntryToDB(QueueEntry qe) {
 		// Returns true if the the queue object was successfully added to DB
-		if (getQueueEntryFromDB(qe.getqCode(), qe.getUser().getEmail()) != null) {
+		if (getQueueEntryFromDB(qe.getQueue().getqCode(), qe.getUser().getEmail()) != null) {
 			return false;
 		}
 		try {
