@@ -84,7 +84,7 @@ public class DBInterface {
 			TableUtils.dropTable(connectionSource, Queue.class, true);
 			TableUtils.dropTable(connectionSource, QueueEntry.class, true);
 		} catch (SQLException se) {
-			System.out.println("Problem in DBInterface.clearTables().");
+			System.out.println("Problem in DBInterface.dropTables().");
 		}
 	}
 
@@ -107,9 +107,6 @@ public class DBInterface {
 	
 	public boolean addUsertoDB(User u) {
 		// Returns true if the the user object was successfully added to DB
-		if (getUserFromDB(u.getEmail()) != null) {
-			return false;
-		}
 		try {
 			userDao.create(u);
 			return true;
@@ -122,9 +119,6 @@ public class DBInterface {
 	
 	public boolean addQueueToDB(Queue q) {
 		// Returns true if the the queue object was successfully added to DB
-		if (getQueueFromDB(q.getqCode()) != null) {
-			return false;
-		}
 		try {
 			queueDao.create(q);
 			return true;
@@ -137,9 +131,6 @@ public class DBInterface {
 	
 	public boolean addQueueEntryToDB(QueueEntry qe) {
 		// Returns true if the the queue object was successfully added to DB
-		if (getQueueEntryFromDB(qe.getQueue().getqCode(), qe.getUser().getEmail()) != null) {
-			return false;
-		}
 		try {
 			queueEntryDao.create(qe);
 			return true;
