@@ -259,7 +259,7 @@ public class QueueSCServer {
 		}
 		
 		// Queue not found --> send error message
-		boolean queueFound = (dbInterface.getQueueFromDB(qCode) == null);
+		boolean queueFound = (dbInterface.getQueueFromDB(qCode) != null);
 		if (!queueFound) {
 			Message response = new Message("removeUserResponse");
 			response.setResponseStatus("qCodeInvalid");
@@ -348,7 +348,7 @@ public class QueueSCServer {
 		}
 		
 		// Queue not found --> send error message
-		boolean queueFound = (dbInterface.getQueueFromDB(qCode) == null);
+		boolean queueFound = (dbInterface.getQueueFromDB(qCode) != null);
 		if (!queueFound) {
 			response.setResponseStatus("qCodeInvalid");
 			sendMessage(response, s);
