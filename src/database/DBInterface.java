@@ -54,9 +54,7 @@ public class DBInterface {
 			userDao = DaoManager.createDao(connectionSource, User.class);
 			queueDao = DaoManager.createDao(connectionSource, Queue.class);
 			queueEntryDao = DaoManager.createDao(connectionSource, QueueEntry.class);
-			
-			dropTables();
-			
+						
 			// Create database tables if they do not exist
 			TableUtils.createTableIfNotExists(connectionSource, User.class);
 			TableUtils.createTableIfNotExists(connectionSource, Queue.class);
