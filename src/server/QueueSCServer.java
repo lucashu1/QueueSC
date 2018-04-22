@@ -142,6 +142,7 @@ public class QueueSCServer {
 	private void processEnqueueRequest(Message m, Session s) {
 		String email = m.getEmail();
 		String qCode = m.getqCode();
+		System.out.println("Attempting to join queue with Q-Code: " + qCode);
 		Integer numFieldInput = m.getNumFieldInput();
 		String textFieldInput = m.getTextFieldInput();
 		
@@ -207,6 +208,14 @@ public class QueueSCServer {
 				sendMessage(resp, s);
 				return;
 			}
+		}
+		
+		// Village Crepes demo: send userOutOfRange
+		if (q.getName().equals("Village Crepes")) {
+			Message resp = new Message("enqueueResponse");
+			resp.setResponseStatus("userOutOfRange");
+			sendMessage(resp, s);
+			return;
 		}
 		
 		// Add queue entry
