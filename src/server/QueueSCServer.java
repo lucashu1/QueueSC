@@ -90,6 +90,7 @@ public class QueueSCServer {
 	private void processCreateQueueRequest(Message m, Session s) {
 		String qCode = dbInterface.generateValidQCode();
 		String name = m.getQueueName();
+		System.out.println("Attempting to create queue with name: " + name);
 		String description = m.getQueueDescription();
 		String ownerEmail = m.getEmail();
 		User owner = dbInterface.getUserFromDB(ownerEmail);
@@ -145,7 +146,7 @@ public class QueueSCServer {
 		String textFieldInput = m.getTextFieldInput();
 		
 		// User not found --> send error mesage
-		boolean userFound = (dbInterface.getUserFromDB(email) == null);
+		boolean userFound = (dbInterface.getUserFromDB(email) != null);
 		if (!userFound) { 
 			Message response = new Message("enqueueResponse");
 			response.setResponseStatus("emailInvalid");
@@ -250,7 +251,7 @@ public class QueueSCServer {
 		String email = m.getEmail();
 		
 		// User not found --> send error mesage
-		boolean userFound = (dbInterface.getUserFromDB(email) == null);
+		boolean userFound = (dbInterface.getUserFromDB(email) != null);
 		if (!userFound) { 
 			Message response = new Message("removeUserResponse");
 			response.setResponseStatus("emailInvalid");
