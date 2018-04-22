@@ -99,7 +99,7 @@ public class QueueSCServer {
 		boolean isPublic = m.isPublic();
 		int maxSize = m.getMaxSize();
 		
-		if (dbInterface.getQueueFromDB(qCode) == null) { // qCode is taken --> send error message
+		if (dbInterface.getQueueFromDB(qCode) != null) { // qCode is taken --> send error message
 			Message resp = new Message("createQueueResposne");
 			resp.setResponseStatus("qCodeTaken");
 			sendMessage(resp, s);
