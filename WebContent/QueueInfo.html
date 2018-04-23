@@ -44,13 +44,19 @@ function GetURLParameter(sParam)
     }
 } 
 
-function leaveQueue()
+function leaveQ()
 {
 	var leaveQueueRequest={type:"removeUserRequest", email:userQueueRequest.email, queueCode: userQueueRequest.queueCode};
 	socket.send(JSON.stringify(leaveQueueRequest));
 	
 	
 } 
+
+function backToDashBoard()
+{
+	window.location="HomeDashboard.html?email="+GetURLParameter("email");
+
+}
 
 function connectToServer()
 {
@@ -59,7 +65,7 @@ function connectToServer()
 	{
 		
 		userQueueRequest.email=GetURLParameter("email");
-		userQueueRequest.queueCode=GetURLParameter("queueCode");
+		userQueueRequest.queueCode=GetURLParameter("qCode");
 		socket.send(JSON.stringify(userQueueRequest));
 	}
 	socket.onmessage=function(event)
@@ -69,10 +75,17 @@ function connectToServer()
 			{
 			if(userQueueResponse.responseStatus=="success")
 				{
-				alert("Successfully removed");
+				//alert("Successfully removed");
 				window.location="HomeDashboard.html?email="+userQueueRequest.email;
-				
 				}
+			else
+				{
+				console.log(userQueueResponse.responseStatus)
+				}
+			}
+		else if(userQueueResponse.type=="forceRefresh")
+			{
+			location.reload();
 			}
 		else 
 			{
@@ -84,6 +97,7 @@ function connectToServer()
 			{
 				
 				queueIndex=  userQueueResponse.queuesEnteredCodes.indexOf(userQueueRequest.queueCode); 
+				console.log(queueIndex);
 				document.getElementById("queueName").innerHTML= "<h2>Name: "+ userQueueResponse.queuesEnteredNames[queueIndex] +"</h2>";
 				document.getElementById("queuePosition").innerHTML= "<h2>Position:" + userQueueResponse.queuesEnteredPositions[queueIndex] +"</h2>";
 				document.getElementById("averageWaitTime").innerHTML="<h2>Wait Time: " +userQueueResponse.avgWaitTime + "</h2>";
@@ -107,13 +121,13 @@ window.onload = connectToServer;
 <div class="container vertical-center input-form-wrapper">
 		
 		<form class="general-form-style">
-			<a class="btn btn-warning" href="HomeDashboard.html" role="button">Back to Dashboard</a>
+			<a class="btn btn-warning" onclick="backToDashBoard();" role="button">Back to Dashboard</a>
 			<br><br>
-			<div id="queueName"><h2>Test</h2></div>
-			<div id="queuePosition">Test</div>
-			<div id="averageWaitTime">Test</div>
+			<div id="queueName"><h2></h2></div>
+			<div id="queuePosition"></div>
+			<div id="averageWaitTime"></div>
 			<br><br>
-			<input class="btn btn-warning btn-lg" type="button" id="leaveQueue" value="Leave Queue" onclick="leaveQueue()"></input>
+			<input class="btn btn-warning btn-lg" type="button" id="leaveQueue" value="Leave Queue" onclick="leaveQ()"></input>
 		</form>
 </div>
 

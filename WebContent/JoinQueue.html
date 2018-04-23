@@ -32,7 +32,7 @@ var userEmail;
 var longitude;
 var latitude;
 var position;
-var joinQueueRequest ={ type:"enqueueRequest", qcode:"", email:"", longitude:"", latitude:""};
+var joinQueueRequest ={ type:"enqueueRequest", qCode:"", email:""};
 
 function GetURLParameter(sParam)
 {
@@ -51,7 +51,9 @@ function GetURLParameter(sParam)
 
 function onSubmit()
 {
-	checkQueueValidity.qCode= document.getElementById("QueueCode").value;
+	checkQueueValidity.qCode= document.getElementById("queue").value;
+	console.log(checkQueueValidity.qCode);
+	joinQueueRequest.qCode=checkQueueValidity.qCode;
 	socket.send(JSON.stringify(checkQueueValidity));
 	userEmail= GetURLParameter("email");	
 }
@@ -68,23 +70,25 @@ function connectToServer()
 				{
 				document.getElementById("errorCode").innerHTML="Invalid Queue Code";
 				}
-			else if( message.responseStatus=="success" && (message.numFieldRequired==true || message.textFieldRequired==true || numFieldInput==true))
+			else if( message.responseStatus=="success" && (message.numFieldRequired==true || message.textFieldRequired==true /*|| numFieldInput==true*/))
 				{
 				window.location="JoinQueueExtraInfo.hmtl?qCode="+checkQueueValidity.qCode+"&email="+userEmail;
 				}
 			else if(message.responseStatus=="success")
 				{
-				position= navigator.geolocation.getCurrentPosition();
+				/* position= navigator.geolocation.getCurrentPosition();
 				joinQueueRequest.qCode=checkQueueValidity.qCode; 
-				joinQueueRequest.email=userEmail;
+				
 				joinQueueRequest.longitude = position.coords.longitude;
-				joinQueueRequest.latitudue=position.coords.longitude;
+				joinQueueRequest.latitudue=position.coords.longitude; */
+				joinQueueRequest.email=userEmail;
 				socket.send(JSON.stringify(joinQueueRequest));
 				
 				}
 			}
-		else if (message.type="joinQueueResponse") 
+		else if (message.type="enqueueQueueResponse") 
 			{
+			console.log(message.responseStatus);
 			if(message.responseStatus=="qCodeInvalid")
 				{
 				document.getElementById("errorCode").innerHTML= "Queue Code Invalid"
@@ -104,7 +108,7 @@ function connectToServer()
 			else if(message.responseStatus=="success")
 				{
 				alert("Successfully joined queue");
-				window.location="QueueInfo.html?qCode="+checkQueueValidity.qCode;
+				window.location="QueueInfo.html?qCode="+checkQueueValidity.qCode+"&email="+userEmail;
 				}
 			
 			}
@@ -132,7 +136,7 @@ window.onload= connectToServer;
 		<form class="general-form-style" onsubmit="onSubmit(); return false;">
 			<div class="form-group" id="QueueCode">
 				<label for="QueueCode">Enter QueueCode:</label>
-				<input type="text" class="form-control" id="QueueCode" >
+				<input type="text" class="form-control" id="queue">
 			</div>
 			<div id="errorCode">
 			<p style="color:red"></p>

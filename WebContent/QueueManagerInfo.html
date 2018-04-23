@@ -27,9 +27,13 @@
 <script>
 
 var socket;
-var pullQueueInfoRequest={type:"pullQueueInfo", qCode:""};
+var pullQueueInfoRequest={type:"pullQueueInfoRequest", qCode:""};
 var topUser;
 var topUserEmail;
+
+
+
+
 
 function GetURLParameter(sParam) {
     var sPageURL = window.location.search.substring(1);
@@ -44,11 +48,18 @@ function GetURLParameter(sParam) {
     }
 }
 
+function backToDashBoard()
+{
+	window.location="HomeDashboard.html?email="+GetURLParameter("email");
+
+}
+
 function connectToServer() {
 
 	socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
 	socket.onopen=function (){
-		pullQueueInfoRequest.qCode=GetURLParameter("qcode");
+		pullQueueInfoRequest.qCode=GetURLParameter("qCode");
+		console.log(pullQueueInfoRequest.qCode);
 		socket.send(JSON.stringify(pullQueueInfoRequest));
 	}
 	
@@ -58,20 +69,29 @@ function connectToServer() {
 		if(pullQueueInfoResponse.type=="removeUserResponse")
 			{
 				//if unsuccessful show error
-				if(pullQueueInfoResponse.responseStatus!="success!"){
-					alert("Could not remove user");
+				if(pullQueueInfoResponse.responseStatus!="success"){
+					console.log(pullQueueInfoResponse.responseStatus)
+					}
+				else
+					{
+					location.reload();
 					}
 			}
 		//update queue info regardless. 
-		if(pullQueueInfoResponse.responseStatus=="qCodeInvalid"){
+		else if(pullQueueInfoResponse.responseStatus=="qCodeInvalid"){
 			alert("Invalid qCode. Could not fetch data");
 		}
+		else if(pullQueueInfoResponse.type=="forceRefresh")
+			{
+			location.reload();
+			}
 		else {			
 			/*Listing users in queue*/
 			var userCards="";
-			var users = pullQueueInfoResponse.usersInQueueNames;
-			topUser = pullQueueInfoResponse.usersInQueueNames[0];
-			topUserEmail = pullQueueInfoResponse.usersInQueueEmails[0];
+			var users = pullQueueInfoResponse.usersInQueueEmails;
+			//topUser = pullQueueInfoResponse.usersInQueueNames[0];
+			topUserEmail =  pullQueueInfoResponse.usersInQueueEmails[0];
+			console.log(topUserEmail);
 			for(var j=0; j<users.length; j++){
 				var m;
 				var username = users[j];
@@ -90,13 +110,13 @@ function connectToServer() {
 function removeTopUser(){
 		var removeUserRequest={type:"removeUserRequest", email:"", qCode:""};
 		removeUserRequest.email = topUserEmail;
-		removeUserRequest.qCode = GetURLParameter("qcode");
+		removeUserRequest.qCode = GetURLParameter("qCode");
 		socket.send(JSON.stringify(removeUserRequest));
 }
 
 window.onload = function(){
 	connectToServer();
-	document.getElementById("QueueCodeDisplay").innerHTML = "<h1>Queue Code: " + GetURLParameter("qcode") + "</h1>";
+	document.getElementById("QueueCodeDisplay").innerHTML = "<h1>Queue Code: " + GetURLParameter("qCode") + "</h1>";
 }
 </script>
 
@@ -108,7 +128,7 @@ window.onload = function(){
 	</div>
 	
 	<div class="container" style="padding-top: 20px;">
-		<a class="btn btn-warning" href="HomeDashboard.html" role="button">Back to Dashboard</a>
+		<a class="btn btn-warning" onclick="backToDashBoard();" role="button">Back to Dashboard</a>
 		<br><br>
 		<div class="row">
 			<div class="col-4">

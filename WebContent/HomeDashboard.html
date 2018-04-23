@@ -27,6 +27,10 @@
 <script>
 var socket;
 var userDashboardRequest={type:"pullUserInfoRequest", email:""}
+function joinQueuePage()
+{
+	window.location="JoinQueue.html?email="+userDashboardRequest.email;
+	}
 function GetURLParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
@@ -76,7 +80,7 @@ function connectToServer()
 				userDashboardResponse.queuesEnteredNames[i]+
 				"</h5>"+
 				"<h6 class=\"card-subtitle mb-2 text-muted\">"+userDashboardResponse.queuesEnteredPositions[i]+"</h6>"+
-				"<a href=\"http://localhost:8080/QueueSC/QueueInfo.html?queueCode="+userDashboardResponse.queuesEnteredCodes[i]+"\" class=\"card-link\">Queue link</a>"+
+				"<a href=\"http://localhost:8080/QueueSC/QueueInfo.html?qCode="+userDashboardResponse.queuesEnteredCodes[i]+"&email="+userDashboardRequest.email+"\" class=\"card-link\">Queue link</a>"+
 				"</div>"+
 				"</div>"+
 				"<br><br>";
@@ -92,7 +96,7 @@ function connectToServer()
 				m="<div class=\"card\" style=\"width: 18rem;\">"+
 				"<div class=\"card-body\">"+
 					"<h5 class=\"card-title\">"+userDashboardResponse.queuesManagingNames[j]+"</h5>"+
-					"<a href=\"http://localhost:8080/QueueSC/QueueInfo.html?queueCode="+userDashboardResponse.queuesManagingCodes[j]+"class=\"card-link\">Queue link</a>"+
+					"<a href=\"QueueManagerInfo.html?qCode="+userDashboardResponse.queuesManagingCodes[j]+"&email="+userDashboardRequest.email+"\" class=\"card-link\">Queue link</a>"+
 				"</div>"+
 				"</div>"+
 				"<br><br>";
@@ -126,7 +130,7 @@ window.onload= connectToServer;
 			</div>
 			<div class="col-4">
 				<h1>Queues Entered</h1>
-				<a class="btn btn-warning btn-lg" href="JoinQueue.html" role="button">Join Queue</a>
+				<a class="btn btn-warning btn-lg" onclick="joinQueuePage()" role="button">Join Queue</a>
 				<div id="updateQueuesEntered"></div>
 				<div class="card" style="width: 18rem;">
 					<div class="card-body">

@@ -25,7 +25,7 @@
 
 		socket.onmessage = function(event) {
 			var message = JSON.parse(event.data);
-			alert(message.responseStatus);
+			//alert(message.responseStatus);
 			if (message.responseStatus == "emailTaken") {
 				document.getElementById("emailError").innerHTML = message.responseStatus;
 			}
@@ -33,9 +33,13 @@
 				document.getElementById("queueCodeError").innerHTML = message.responseResponse;
 			}
 			if (message.responseStatus == "success") {
-				alert("success");
+				var enqueueRequest={type:"enqueueRequest", email:createGuestUser.email, qCode:createGuestUser.qCode, textFieldDescription:" "}
+				socket.send(JSON.stringify(enqueueRequest));
+				if(message.type=="enqueueResponse")
+					{
 				window.location = "QueueInfo.html?qCode="
-						+ createGuestUser.qCode;
+						+ createGuestUser.qCode+"&email="+createGuestUser.email;
+					}
 			}
 
 		}
