@@ -525,7 +525,7 @@ public class DBInterface {
 			
 			// build query for the user
 			QueryBuilder<User, String> userQB = userDao.queryBuilder();
-			queueQB.where().eq(User.EMAIL_FIELD_NAME, email);
+			userQB.where().eq(User.EMAIL_FIELD_NAME, email);
 			
 			// Combine into query for QueueEntry
 			QueryBuilder<QueueEntry, Integer> queueEntryQB = queueEntryDao.queryBuilder();

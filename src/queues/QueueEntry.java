@@ -44,7 +44,7 @@ public class QueueEntry implements Comparable<QueueEntry> {
     }
 	
 	// QueueEntry constructor
-	public QueueEntry(User u, Queue q, String textFieldInput, int numFieldInput) {
+	public QueueEntry(User u, Queue q, String textFieldInput, Integer numFieldInput) {
 		this.user = u;
 		this.queue = q;
 		this.textFieldInput = textFieldInput;
