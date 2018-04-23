@@ -451,8 +451,11 @@ public class QueueSCServer {
 		Vector<String> queuesManagingCodes = new Vector<String>();
 		
 		for (QueueEntry qe : userQueueEntries) {
-			queuesEnteredNames.add(qe.getQueue().getName());
-			queuesEnteredCodes.add(qe.getQueue().getqCode());
+			String qCode = qe.getQueue().getqCode();
+			String name = dbInterface.getQueueFromDB(qCode).getName();
+			
+			queuesEnteredNames.add(name);
+			queuesEnteredCodes.add(qCode);
 			queuesEnteredPositions.add(qe.getPosition());
 		}
 		
