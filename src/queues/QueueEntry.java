@@ -30,7 +30,7 @@ public class QueueEntry implements Comparable<QueueEntry> {
     @DatabaseField
 	private String textFieldInput;
     @DatabaseField
-	private int numFieldInput;
+	private Integer numFieldInput;
     @DatabaseField(foreign = true)
 	private User user;
     @DatabaseField(foreign = true)
