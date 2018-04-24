@@ -42,10 +42,11 @@ public class PrepDemo {
 		dbInterface.addQueueToDB(crepesQueue);
 		
 		// ----- Add queue entries to DB ----- //
-		QueueEntry cpQE1 = new QueueEntry(nikias, cpQueue, "", 0);
+		QueueEntry cpQE1 = new QueueEntry(lucas, cpQueue, "", 0);
 		cpQE1.setPosition(1);
 		dbInterface.addQueueEntryToDB(cpQE1);
-		QueueEntry cpQE2 = new QueueEntry(lucas, cpQueue, "", 0);
+		
+		QueueEntry cpQE2 = new QueueEntry(nikias, cpQueue, "", 0);
 		cpQE2.setPosition(2);
 		dbInterface.addQueueEntryToDB(cpQE2);
 	}
