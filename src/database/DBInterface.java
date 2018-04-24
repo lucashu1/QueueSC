@@ -330,6 +330,8 @@ public class DBInterface {
 	public QueueEntry advanceQueue (String qCode) {		
 		// remove the "top" user from the queue
 		QueueEntry topOfQueue = getQueueEntryFromDBByPosition(qCode, 1);
+		System.out.println(topOfQueue.getUser().getEmail());
+		System.out.println(topOfQueue.getPosition());
 		deleteQueueEntryFromDB(topOfQueue.getQueue().getqCode(), topOfQueue.getUser().getEmail());
 		
 		//Get the queue

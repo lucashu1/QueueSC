@@ -11,7 +11,6 @@ public class DBTest {
 	
 	public static void main(String[] args) {
 		DBInterface db = new DBInterface();
-		db.clearTables();
 		// clear the tables first
 		// try adding user to database
 		User newUser = new User("leonardo", "cicconi", "cicconi@usc.edu");
@@ -68,8 +67,10 @@ public class DBTest {
 //			System.out.println(qe.getQueue().getqCode());
 //			System.out.println(qe.getPosition());
 //		}
+		System.out.println("num of people in queue: " + db.getEntriesInQueue(newQCode).size());
 		db.advanceQueue(newQCode);
-		//db.advanceQueue(newQCode);
+		System.out.println("num of people in queue: " + db.getEntriesInQueue(newQCode).size());
+		db.advanceQueue(newQCode);
 	}
 	
 }
