@@ -70,7 +70,7 @@ function connectToServer()
 				{
 				document.getElementById("errorCode").innerHTML="Invalid Queue Code";
 				}
-			else if( message.responseStatus=="success" && (message.numFieldRequired==true || message.textFieldRequired==true /*|| numFieldInput==true*/))
+			else if( message.responseStatus=="success" && (message.numFieldRequired==true || message.textFieldRequired==true ))
 				{
 				console.log("test");
 				window.location="JoinQueueExtraInfo.html?qCode="+checkQueueValidity.qCode+"&email="+userEmail;
