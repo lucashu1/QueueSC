@@ -293,7 +293,7 @@ public class QueueSCServer {
 		String email = qe.getUser().getEmail();
 		
 		// Send email notification to user
-		EmailSender es = new EmailSender(email, queueName);
+		EmailSender es = new EmailSender(email, "CS270 CP Help");
 		es.start();
 		
 		// Send response to client
