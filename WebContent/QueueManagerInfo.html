@@ -66,15 +66,11 @@ function connectToServer() {
 	socket.onmessage = function(event) {
 		var pullQueueInfoResponse=JSON.parse(event.data);
 		//if its a response to a remove user request
-		if(pullQueueInfoResponse.type=="removeUserResponse")
+		if(pullQueueInfoResponse.type=="dequeueRequest")
 			{
 				//if unsuccessful show error
 				if(pullQueueInfoResponse.responseStatus!="success"){
 					console.log(pullQueueInfoResponse.responseStatus)
-					}
-				else
-					{
-					location.reload();
 					}
 			}
 		//update queue info regardless. 
@@ -90,7 +86,7 @@ function connectToServer() {
 			var userCards="";
 			var users = pullQueueInfoResponse.usersInQueueEmails;
 			//topUser = pullQueueInfoResponse.usersInQueueNames[0];
-			topUserEmail =  pullQueueInfoResponse.usersInQueueEmails[0];
+			//topUserEmail =  pullQueueInfoResponse.usersInQueueEmails[0];
 			console.log(topUserEmail);
 			for(var j=0; j<users.length; j++){
 				var m;
@@ -108,10 +104,9 @@ function connectToServer() {
 }
 
 function removeTopUser(){
-		var removeUserRequest={type:"removeUserRequest", email:"", qCode:""};
-		removeUserRequest.email = topUserEmail;
-		removeUserRequest.qCode = GetURLParameter("qCode");
-		socket.send(JSON.stringify(removeUserRequest));
+		var dequeueRequest={type:"dequeueRequest", qCode:""};
+		dequeueRequest.qCode = GetURLParameter("qCode");
+		socket.send(JSON.stringify(dequeueRequest));
 }
 
 window.onload = function(){

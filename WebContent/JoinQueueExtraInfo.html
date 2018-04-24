@@ -26,8 +26,52 @@
 	<!--  NEED TO ADD JS VALIDATION -->
 	<link rel="stylesheet" href="GeneralStyle.css">
 </head>
+<script>
+var socket;
+var enqueueRequest={type:"enqueueRequest", email:"", qCode:"", textFieldInput:""};
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) 
+        {
+            return sParameterName[1];
+        }
+    }
+}
+function onSubmit()
+{
+	enqueue.email=GetURLParameter("email");
+	enqueue.qCode=GetURLParameter("qCode");
+	enqueue.textFieldInput=document.getElementById("InputTextField").value;
+	socket.send(JSON.stringify());
+
+}
+function connectToServer()
+{
+	socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
+	socket.onmessage=function(event)
+	{
+		var message=JSON.parse(event.data);
+		if(message.responseStatus=="success")
+			{
+			console.log("success");
+			window.location="HomeDashboard.html?email="+enqueue.email;
+			}
+		else
+			{
+			console.log("unable to join queue");
+			}
+		
+	}
+}
 
 
+
+</script>
 <body>
 	<div id="navbar" class="topnav">
 		<h1>QueueSC</h1>
@@ -45,16 +89,16 @@
 				<label for="InputTextField">Input Text</label>
 				<input type="text" class="form-control" id="InputTextField" >
 			</div>
-			<div class="form-group" id="InputNumberField">
+			<!-- <div class="form-group" id="InputNumberField">
 				<label for="InputNumberField">Input Number</label>
 				<input type="number" class="form-control" id="InputNumberField" min="0" >
-			</div>
-			<div class="form-group" id="LocationRestriction">
+			</div> -->
+			<!-- <div class="form-group" id="LocationRestriction">
 				<label for="Location Restriction">Location Restriction On, Must Be Within:</label>
 			</div>
 			<p style="color:red"> Sorry This Queue is Full!</p>
-			<p style="color:red"> You Are Not Within Range of Queue! (Location Restriction Enabled)</p>
-			<button type="submit" class="btn btn-primary">Join Queue!</button>
+			<p style="color:red"> You Are Not Within Range of Queue! (Location Restriction Enabled)</p>-->
+			<button type="submit" onclick="onSubmit();" class="btn btn-primary">Join Queue!</button> 
 		</form>
 	</div>
 

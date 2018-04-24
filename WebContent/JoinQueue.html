@@ -51,7 +51,7 @@ function GetURLParameter(sParam)
 
 function onSubmit()
 {
-	checkQueueValidity.qCode= document.getElementById("queue").value;
+	checkQueueValidity.qCode= document.getElementById("qCode").value;
 	console.log(checkQueueValidity.qCode);
 	joinQueueRequest.qCode=checkQueueValidity.qCode;
 	socket.send(JSON.stringify(checkQueueValidity));
@@ -72,7 +72,8 @@ function connectToServer()
 				}
 			else if( message.responseStatus=="success" && (message.numFieldRequired==true || message.textFieldRequired==true /*|| numFieldInput==true*/))
 				{
-				window.location="JoinQueueExtraInfo.hmtl?qCode="+checkQueueValidity.qCode+"&email="+userEmail;
+				console.log("test");
+				window.location="JoinQueueExtraInfo.html?qCode="+checkQueueValidity.qCode+"&email="+userEmail;
 				}
 			else if(message.responseStatus=="success")
 				{
@@ -82,11 +83,13 @@ function connectToServer()
 				joinQueueRequest.longitude = position.coords.longitude;
 				joinQueueRequest.latitudue=position.coords.longitude; */
 				joinQueueRequest.email=userEmail;
+				joinQueueRequest.textFieldInput="";
+				joinQueueRequest.numFeildInput=0;
 				socket.send(JSON.stringify(joinQueueRequest));
 				
 				}
 			}
-		else if (message.type="enqueueQueueResponse") 
+		else if (message.type="enqueueResponse") 
 			{
 			console.log(message.responseStatus);
 			if(message.responseStatus=="qCodeInvalid")
@@ -136,7 +139,7 @@ window.onload= connectToServer;
 		<form class="general-form-style" onsubmit="onSubmit(); return false;">
 			<div class="form-group" id="QueueCode">
 				<label for="QueueCode">Enter QueueCode:</label>
-				<input type="text" class="form-control" id="queue">
+				<input type="text" class="form-control" id="qCode">
 			</div>
 			<div id="errorCode">
 			<p style="color:red"></p>
