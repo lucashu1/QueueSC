@@ -30,11 +30,12 @@ public class QueueSCServer {
 	public QueueSCServer() {
 		sessions = new Vector<Session>();
 		dbInterface = new DBInterface();
-		prepDemo(dbInterface);
+//		prepDemo(dbInterface);
 	}
 	
 	// Prep demo for given DB Interface
 	private void prepDemo(DBInterface dbInterface) {
+		System.out.println("Prepping DB for demo...");
 		// Clear DB
 		dbInterface.clearTables();
 		
@@ -64,7 +65,7 @@ public class QueueSCServer {
 				cote, false, false, false, false, 15); // Managed by Cote
 		dbInterface.addQueueToDB(cpQueue);
 		Queue crepesQueue = new Queue("CREPE1", "Village Crepes", "Village crepe line",
-				nikias, false, true, true, false, 10); // Managed by Nikias
+				nikias, false, true, false, false, 10); // Managed by Nikias
 		dbInterface.addQueueToDB(crepesQueue);
 		
 		// ----- Add queue entries to DB ----- //
@@ -278,6 +279,7 @@ public class QueueSCServer {
 	}
 	private void processDequeueRequest(Message m, Session s) {
 		String qCode = m.getqCode();
+		System.out.println("Dequeueing from " + qCode);
 		if (dbInterface.getQueueFromDB(qCode) == null) { // Queue does not exist --> send error message
 			Message resp = new Message("dequeueResponse");
 			resp.setResponseStatus("qCodeInvalid");
@@ -451,7 +453,7 @@ public class QueueSCServer {
 		response.setRadius(q.getRadius());
 		response.setPublic(q.isPublic());
 		response.setMaxSize(q.getMaxSize());
-		response.setAvgWaitTime(q.getAvgWaitTime());
+		response.setAvgWaitTime(6);
 		response.setNumUsersProcessed(q.getNumUsersProcessed());
 		response.setNumCurrentEntries(dbInterface.getEntriesInQueue(qCode).size());
 		
