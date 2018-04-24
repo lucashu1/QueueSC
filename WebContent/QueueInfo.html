@@ -101,6 +101,11 @@ function connectToServer()
 				
 				queueIndex=  userQueueResponse.queuesEnteredCodes.indexOf(userQueueRequest.qCode); 
 				console.log(queueIndex);
+				if(userQueueResponse.queuesEnteredNames[queueIndex]==null && userQueueResponse.queuesEnteredPositions[queueIndex]==null)
+					{
+					window.alert("You have been removed from this queue!")
+					backToDashBoard();
+					}
 				if(userQueueResponse.avgWaitTime==0)
 					{
 					userQueueResponse.avgWaitTime=userQueueResponse.queuesEnteredPositions[queueIndex]*6;	
