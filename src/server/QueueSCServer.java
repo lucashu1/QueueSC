@@ -22,10 +22,57 @@ import users.User;
 	encoders = MessageEncoder.class)
 
 public class QueueSCServer {
-	private static Vector<Session> sessions = new Vector<Session>();
+	private static Vector<Session> sessions;
 //	private QueueManager qm;
 //	private UserManager um;
-	private DBInterface dbInterface = new DBInterface();
+	private DBInterface dbInterface;
+	
+	public QueueSCServer() {
+		sessions = new Vector<Session>();
+		dbInterface = new DBInterface();
+		prepDemo(dbInterface);
+	}
+	
+	// Prep demo for given DB Interface
+	private void prepDemo(DBInterface dbInterface) {
+		// Clear DB
+		dbInterface.clearTables();
+		
+		// ----- Create users and add to DB ----- //
+		// Email: president@usc.edu, Password: fucla
+		User nikias = new User("Max", "Nikias", "president@usc.edu");
+		nikias.setPasswordHash(nikias.hashPassword("fucla"));
+		dbInterface.addUsertoDB(nikias);
+		
+		// Email: lucashu@usc.edu, Password: queuescrules
+		User lucas = new User("Lucas", "Hu", "lucashu@usc.edu"); 
+		lucas.setPasswordHash(lucas.hashPassword("queuescrules"));
+		dbInterface.addUsertoDB(lucas);
+		
+		// Email: nthakur@usc.edu, Password: password123
+		User natasha = new User("Natasha", "Thakur", "nthakur@usc.edu"); 
+		natasha.setPasswordHash(natasha.hashPassword("password123"));
+		dbInterface.addUsertoDB(natasha);
+		
+		// Email: cote@usc.edu, Password: pequalsnp
+		User cote = new User("Aaron", "Cote", "cote@usc.edu");
+		cote.setPasswordHash(cote.hashPassword("pequalsnp"));
+		dbInterface.addUsertoDB(cote);
+		
+		// ----- Create queues and add to DB ----- //
+		Queue cpQueue = new Queue("CP1234", "CS270 CP Help", "Week of 4/23 270 questions", 
+				cote, false, false, false, false, 15); // Managed by Cote
+		dbInterface.addQueueToDB(cpQueue);
+		Queue crepesQueue = new Queue("CREPE1", "Village Crepes", "Village crepe line",
+				nikias, false, true, true, false, 10); // Managed by Nikias
+		dbInterface.addQueueToDB(crepesQueue);
+		
+		// ----- Add queue entries to DB ----- //
+		QueueEntry cpQE1 = new QueueEntry(nikias, cpQueue, "", 0);
+		dbInterface.addQueueEntryToDB(cpQE1);
+		QueueEntry cpQE2 = new QueueEntry(lucas, cpQueue, "", 0);
+		dbInterface.addQueueEntryToDB(cpQE2);
+	}
 	
 	@OnOpen
 	public void open(Session session) {
