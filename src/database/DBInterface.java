@@ -223,15 +223,7 @@ public class DBInterface {
 	}
 	
 	
-	// FIX
 	public QueueEntry getQueueEntryFromDBByPosition(String qCode, int position) {
-		// Get the queue object
-		Queue allegedQueue = getQueueFromDB(qCode);
-		if (allegedQueue == null) {
-			return (QueueEntry) null;
-		}
-		
-		// Build the query
 		try {
 			// Build query for queue
 			QueryBuilder<Queue, String> queueQB = queueDao.queryBuilder();
@@ -243,16 +235,14 @@ public class DBInterface {
 			
 			// Run the query and return the result if appropriate
 			List<QueueEntry> results = queryBuilder.join(queueQB).query();
-			if (results.size() != 1) {
+			if (results == null) {
 				return (QueueEntry) null;
-			} else {
-				return results.get(0);
 			}
+			return results.get(0);
 		} catch (SQLException se) {
 			System.out.println("Problem reading from database");
 			return (QueueEntry) null; 		
 		}
-
 	}
 	
 	////////////////////////////////////////////
@@ -338,11 +328,13 @@ public class DBInterface {
 	public QueueEntry advanceQueue (String qCode) {		
 		// remove the "top" user from the queue
 		QueueEntry topOfQueue = getQueueEntryFromDBByPosition(qCode, 1);
+		System.out.println("QueueEntry: " + topOfQueue.getUser().getEmail());
 		deleteQueueEntryFromDB(topOfQueue.getQueue().getqCode(), topOfQueue.getUser().getEmail());
 		
 		//Get the queue
 		Queue thisQueue = getQueueFromDB(qCode);
 		if (thisQueue == null) {
+			System.out.println("Could not find Queue in DB");
 			return (QueueEntry) null;
 		}
 		
@@ -358,6 +350,9 @@ public class DBInterface {
 		
 		// increment num users processed
 		incrementNumUsersProcessed(qCode);
+		
+		// Update the other users in queue's positions
+		updateQueuePositions(qCode, 1);
 		
 		// return the QueueEntry that was popped from Queue
 		return topOfQueue;

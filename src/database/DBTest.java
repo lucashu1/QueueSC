@@ -1,6 +1,7 @@
 package database;
 
 import java.util.List;
+import java.util.Vector;
 
 import queues.Queue;
 import queues.QueueEntry;
@@ -11,7 +12,6 @@ public class DBTest {
 	public static void main(String[] args) {
 		DBInterface db = new DBInterface();
 		// clear the tables first
-		db.clearTables();
 		// try adding user to database
 		User newUser = new User("leonardo", "cicconi", "cicconi@usc.edu");
 		db.addUsertoDB(newUser);
@@ -44,8 +44,20 @@ public class DBTest {
 		}
 		// Get that queue entry from the DB and print the details
 		QueueEntry qeFromDB = db.getQueueEntryFromDB(newQCode, "lucashu@usc.edu");
-		System.out.println("QE index: " + qeFromDB.getEntryID());
 		System.out.println("QE email: " + qeFromDB.getUser().getEmail());
+		// TEST getQueueEntriesForUser
+		Queue newQueue2 = new Queue(newQCode, "myQueue2", "this is a test queue", newUser, false, false, false, false, 10);
+		db.addQueueToDB(newQueue2);
+		QueueEntry newQE2 = new QueueEntry(userFromDB2, queueFromDB, "", 0);
+		db.addQueueEntryToDB(newQE2);
+		List<QueueEntry> qesForUser2 = db.getQueueEntriesForUser("lucashu@usc.edu");
+		for (QueueEntry qe : qesForUser2) {
+			System.out.println("QE: ");
+			System.out.println(qe.getUser().getEmail());
+			System.out.println(qe.getQueue().getDescription());
+		}
+		db.advanceQueue(newQCode);
+		//db.advanceQueue(newQCode);
 	}
 	
 }
