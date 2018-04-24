@@ -53,19 +53,37 @@
 	</script>
 	<script>
 	var socket;
-	var createQueueRequest={type:"createQueueRequest", queueName:"Delete Users test", email:"president@usc.edu", maxSize:"15"};
+	var createQueueRequest={type:"createQueueRequest", queueName:"", queueDescription:"", email:"", maxSize:"", };
 	var queueCode;
+	function GetURLParameter(sParam)
+	{
+	    var sPageURL = window.location.search.substring(1);
+	    var sURLVariables = sPageURL.split('&');
+	    for (var i = 0; i < sURLVariables.length; i++) 
+	    {
+	        var sParameterName = sURLVariables[i].split('=');
+	        if (sParameterName[0] == sParam) 
+	        {
+	            return sParameterName[1];
+	        }
+	    }
+	}
 	function onSubmit()
 	{
-		window.location="QueueInfo.html?qcode="+queueCode;
-		
+		//window.location="QueueInfo.html?qcode="+queueCode;
+		createQueueRequest.queueName= document.getElementById("InputQueueName").value;
+		createQueueRequest.queueDescription= document.getElementById("InputQueueDescription").value;
+		createQueueRequest.email=GetURLParameter("email");
+		console.log(createQueueRequest.email);
+		createQueueRequest.maxSize=document.getElementById("InputQueueSize").value;
+		socket.send(JSON.stringify(createQueueRequest));	
 	}
 	function connectToServer()
 	{
 		socket= new WebSocket("ws://localhost:8080/QueueSC/ws");
 		socket.onopen=function ()
 		{
-		socket.send(JSON.stringify(createQueueRequest))
+		//socket.send(JSON.stringify(createQueueRequest))
 		}
 		socket.onmessage=function(event)
 		{
@@ -74,10 +92,12 @@
 				{
 				queueCode=message.qCode;
 				console.log(queueCode);
+				console.log("success");
+				window.location="HomeDashboard.html?email="+createQueueRequest.email;
 				}
 			else
 				{
-				alert(message.responseStatus);
+				console.log(message.responseStatus);
 				}
 			
 		}
@@ -162,7 +182,7 @@
 					</tr>
 			</div>
 
-			<button type="submit"  onclick="backToDashboard();" class="btn btn-primary">Create Queue!</button>
+			<button type="submit"  class="btn btn-primary">Create Queue!</button>
 		</form>
 	</div>
 

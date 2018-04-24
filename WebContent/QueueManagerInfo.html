@@ -66,11 +66,15 @@ function connectToServer() {
 	socket.onmessage = function(event) {
 		var pullQueueInfoResponse=JSON.parse(event.data);
 		//if its a response to a remove user request
-		if(pullQueueInfoResponse.type=="dequeueRequest")
+		if(pullQueueInfoResponse.type=="dequeueResponse")
 			{
 				//if unsuccessful show error
 				if(pullQueueInfoResponse.responseStatus!="success"){
 					console.log(pullQueueInfoResponse.responseStatus)
+					}
+				else
+					{
+					location.reload();
 					}
 			}
 		//update queue info regardless. 
@@ -134,7 +138,6 @@ window.onload = function(){
 				<div id="QueueCodeDisplay"></div>
 				<a class="btn btn-warning btn-lg" onClick="removeTopUser()" role="button">Remove Top User</a>
 			</div>
-	
 		</div>
 	</div>
 </body>

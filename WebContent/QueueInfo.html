@@ -26,10 +26,10 @@
 
 
 <script>
-var userQueueRequest={type:"pullUserInfoRequest", email:"", queueCode:""}
+var userQueueRequest={type:"pullUserInfoRequest", email:"", qCode:""}
 var queueIndex;
 var socket;
-
+var leaveQueueRequest;
 function GetURLParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
@@ -46,7 +46,9 @@ function GetURLParameter(sParam)
 
 function leaveQ()
 {
-	var leaveQueueRequest={type:"removeUserRequest", email:userQueueRequest.email, queueCode: userQueueRequest.queueCode};
+	leaveQueueRequest={type:"removeUserRequest", email:userQueueRequest.email, qCode: userQueueRequest.qCode};
+	console.log(leaveQueueRequest.email);
+	console.log(leaveQueueRequest.qCode);
 	socket.send(JSON.stringify(leaveQueueRequest));
 	
 	
@@ -65,7 +67,8 @@ function connectToServer()
 	{
 		
 		userQueueRequest.email=GetURLParameter("email");
-		userQueueRequest.queueCode=GetURLParameter("qCode");
+		
+		userQueueRequest.qCode=GetURLParameter("qCode");
 		socket.send(JSON.stringify(userQueueRequest));
 	}
 	socket.onmessage=function(event)
@@ -96,11 +99,15 @@ function connectToServer()
 			else
 			{
 				
-				queueIndex=  userQueueResponse.queuesEnteredCodes.indexOf(userQueueRequest.queueCode); 
+				queueIndex=  userQueueResponse.queuesEnteredCodes.indexOf(userQueueRequest.qCode); 
 				console.log(queueIndex);
+				if(userQueueResponse.avgWaitTime==0)
+					{
+					userQueueResponse.avgWaitTime=userQueueResponse.queuesEnteredPositions[queueIndex]*6;	
+					}
 				document.getElementById("queueName").innerHTML= "<h2>Name: "+ userQueueResponse.queuesEnteredNames[queueIndex] +"</h2>";
 				document.getElementById("queuePosition").innerHTML= "<h2>Position:" + userQueueResponse.queuesEnteredPositions[queueIndex] +"</h2>";
-				document.getElementById("averageWaitTime").innerHTML="<h2>Wait Time: " +userQueueResponse.avgWaitTime + "</h2>";
+				document.getElementById("averageWaitTime").innerHTML="<h2>Wait Time: " +userQueueResponse.avgWaitTime + " Minutes </h2>";
 			}
 			}
 		
