@@ -133,6 +133,8 @@ public class DBInterface {
 		// Returns true if the the queue object was successfully added to DB
 		try {
 			queueEntryDao.create(qe);
+			System.out.println("ADDED QUEUEENTRY TO DB");
+			System.out.println(qe.getUser().getEmail());
 			return true;
 		} catch (SQLException se) {
 			// There was some kind of problem saving the user to the db
@@ -235,7 +237,7 @@ public class DBInterface {
 			
 			// Run the query and return the result if appropriate
 			List<QueueEntry> results = queryBuilder.join(queueQB).query();
-			if (results == null) {
+			if (results.size() == 0) {
 				return (QueueEntry) null;
 			}
 			return results.get(0);
@@ -328,7 +330,6 @@ public class DBInterface {
 	public QueueEntry advanceQueue (String qCode) {		
 		// remove the "top" user from the queue
 		QueueEntry topOfQueue = getQueueEntryFromDBByPosition(qCode, 1);
-		System.out.println("QueueEntry: " + topOfQueue.getUser().getEmail());
 		deleteQueueEntryFromDB(topOfQueue.getQueue().getqCode(), topOfQueue.getUser().getEmail());
 		
 		//Get the queue

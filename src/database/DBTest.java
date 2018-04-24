@@ -11,6 +11,7 @@ public class DBTest {
 	
 	public static void main(String[] args) {
 		DBInterface db = new DBInterface();
+		db.clearTables();
 		// clear the tables first
 		// try adding user to database
 		User newUser = new User("leonardo", "cicconi", "cicconi@usc.edu");
@@ -34,6 +35,7 @@ public class DBTest {
 			System.out.println("The queue was not found in db...");
 		}
 		QueueEntry newQE = new QueueEntry(userFromDB2, queueFromDB, "", 0);
+		newQE.setPosition(1);
 		System.out.println("b4 QE email: " + newQE.getUser().getEmail());
 		System.out.println("b4 QE qCode: " + newQE.getQueue().getqCode());
 
@@ -48,14 +50,24 @@ public class DBTest {
 		// TEST getQueueEntriesForUser
 		Queue newQueue2 = new Queue(newQCode, "myQueue2", "this is a test queue", newUser, false, false, false, false, 10);
 		db.addQueueToDB(newQueue2);
-		QueueEntry newQE2 = new QueueEntry(userFromDB2, queueFromDB, "", 0);
+		QueueEntry newQE2 = new QueueEntry(newUser, queueFromDB, "", 0);
+		newQE2.setPosition(2);
 		db.addQueueEntryToDB(newQE2);
 		List<QueueEntry> qesForUser2 = db.getQueueEntriesForUser("lucashu@usc.edu");
 		for (QueueEntry qe : qesForUser2) {
 			System.out.println("QE: ");
 			System.out.println(qe.getUser().getEmail());
-			System.out.println(qe.getQueue().getDescription());
+			System.out.println(qe.getQueue().getqCode());
+			System.out.println(qe.getPosition());
 		}
+//		System.out.println("TEST");
+//		List<QueueEntry> f = db.getEntriesInQueue(newQCode);
+//		for (QueueEntry qe : qesForUser2) {
+//			System.out.println("QE: ");
+//			System.out.println(qe.getUser().getEmail());
+//			System.out.println(qe.getQueue().getqCode());
+//			System.out.println(qe.getPosition());
+//		}
 		db.advanceQueue(newQCode);
 		//db.advanceQueue(newQCode);
 	}
