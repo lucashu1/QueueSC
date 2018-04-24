@@ -31,6 +31,13 @@ function joinQueuePage()
 {
 	window.location="JoinQueue.html?email="+userDashboardRequest.email;
 	}
+	
+function createQueuePage()
+{
+	window.location="CreateQueue.html?email="+userDashboardRequest.email;
+	
+	}
+
 function GetURLParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
@@ -151,7 +158,7 @@ window.onload= connectToServer;
 			</div>
 			<div class="col-4">
 				<h1>Queues Managing</h1>
-				<a class="btn btn-warning btn-lg" href="CreateQueue.html" role="button">Create Queue</a>
+				<a class="btn btn-warning btn-lg" onclick="createQueuePage();" role="button">Create Queue</a>
 				<div id="updateQueuesManaging"></div>
 				<!-- <div class="card" style="width: 18rem;">
 					<div class="card-body">
